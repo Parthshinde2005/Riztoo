@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-blue-600 font-medium">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/cart.html" class="text-gray-700 hover:text-gray-900">
+                        Cart (<span id="cartCount">0</span>)
+                    </a>
+                    <div id="userMenu" class="hidden">
+                        <a href="/profile.html" class="text-gray-700 hover:text-gray-900">Profile</a>
+                        <span id="userName" class="text-gray-700 ml-2"></span>
+                        <button id="logoutBtn" class="ml-2 text-red-600 hover:text-red-800">Logout</button>
+                    </div>
+                    <div id="loginMenu">
+                        <a href="/login/user" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Product Catalog</h1>
+            
+            <!-- Search and Filters -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="flex-1">
+                    <input type="text" id="searchInput" placeholder="Search products..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <select id="categoryFilter"
+                        class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Books">Books</option>
+                        <option value="Home">Home</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Grocery">Grocery</option>
+                    </select>
+                </div>
+                <button id="searchBtn" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                    Search
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-gray-600">Loading products...</p>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+        </div>
+
+        <!-- No Results -->
+        <div id="noResults" class="text-center py-12 hidden">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No products found</h3>
+            <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
+                        <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="modalContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let currentProducts = [];
+
+        // Load products
+        async function loadProducts(query = '', category = '') {
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('productsGrid').classList.add('hidden');
+                document.getElementById('noResults').classList.add('hidden');
+
+                const params = new URLSearchParams();
+                if (query) params.append('q', query);
+                if (category) params.append('category', category);
+
+                const response = await fetch(`/products?${params}`);
+                const products = await response.json();
+
+                currentProducts = products;
+                displayProducts(products);
+            } catch (error) {
+                console.error('Load products error:', error);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('noResults').classList.remove('hidden');
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            const loading = document.getElementById('loading');
+            const noResults = document.getElementById('noResults');
+
+            loading.classList.add('hidden');
+
+            if (products.length === 0) {
+                grid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            grid.innerHTML = products.map(product => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="aspect-w-1 aspect-h-1 bg-gray-200">
+                        <img src="${product.images?.[0] || '/api/placeholder/300/300'}" 
+                             alt="${product.name}" 
+                             class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">${product.name}</h3>
+                        <p class="text-sm text-gray-600 mb-2">${product.category}</p>
+                        <p class="text-sm text-gray-500 mb-3 line-clamp-2">${product.description || ''}</p>
+                        
+                        ${product.vendorListings?.length > 0 ? `
+                            <div class="space-y-2">
+                                <p class="text-sm font-medium text-gray-700">${product.vendorListings.length} seller(s)</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-lg font-bold text-green-600">
+                                        ₹${Math.min(...product.vendorListings.map(v => v.price)).toLocaleString()}
+                                    </span>
+                                    <button onclick="viewProduct('${product._id}')" 
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        ` : `
+                            <p class="text-sm text-gray-500 italic">No sellers available</p>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View product details
+        async function viewProduct(productId) {
+            try {
+                const response = await fetch(`/products/${productId}`);
+                const product = await response.json();
+
+                document.getElementById('modalTitle').textContent = product.name;
+                document.getElementById('modalContent').innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <img src="${product.images?.[0] || '/api/placeholder/400/300'}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-64 object-cover rounded-lg">
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-600 mb-2"><strong>Category:</strong> ${product.category}</p>
+                            <p class="text-gray-700">${product.description || 'No description available'}</p>
+                        </div>
+
+                        ${product.vendorListings?.length > 0 ? `
+                            <div>
+                                <h3 class="text-lg font-semibold mb-3">Available from ${product.vendorListings.length} seller(s):</h3>
+                                <div class="space-y-3">
+                                    ${product.vendorListings.map(listing => `
+                                        <div class="border rounded-lg p-4">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <h4 class="font-medium">${listing.vendorId.storeName}</h4>
+                                                    ${listing.vendorId.verified ? 
+                                                        '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Verified</span>' : 
+                                                        '<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pending Verification</span>'
+                                                    }
+                                                </div>
+                                                <span class="text-xl font-bold text-green-600">₹${listing.price.toLocaleString()}</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-3">Stock: ${listing.stock} units</p>
+                                            ${listing.stock > 0 ? `
+                                                <button onclick="addToCart('${listing._id}', '${product.name}', '${listing.vendorId.storeName}')" 
+                                                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                                                    Add to Cart
+                                                </button>
+                                            ` : `
+                                                <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-md text-sm cursor-not-allowed">
+                                                    Out of Stock
+                                                </button>
+                                            `}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : `
+                            <p class="text-gray-500 italic">No sellers available for this product</p>
+                        `}
+
+                        ${product.reviews?.length > 0 ? `
+                            <div>
+                                <h3 class="text-lg font-semibold mb-3">Reviews (${product.reviews.length})</h3>
+                                <div class="space-y-3 max-h-64 overflow-y-auto">
+                                    ${product.reviews.slice(0, 5).map(review => `
+                                        <div class="border-b pb-3">
+                                            <div class="flex items-center mb-1">
+                                                <span class="font-medium">${review.userId.name}</span>
+                                                <div class="ml-2 flex text-yellow-400">
+                                                    ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-600">${review.comment}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                document.getElementById('productModal').classList.remove('hidden');
+            } catch (error) {
+                console.error('View product error:', error);
+                showMessage('Failed to load product details', 'error');
+            }
+        }
+
+        // Add to cart
+        async function addToCart(vendorProductId, productName, storeName) {
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vendorProductId, qty: 1 })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(`${productName} from ${storeName} added to cart!`, 'success');
+                    loadCartCount();
+                } else {
+                    showMessage(result.error || 'Failed to add to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                showMessage('Failed to add to cart', 'error');
+            }
+        }
+
+        // Load cart count
+        async function loadCartCount() {
+            try {
+                const response = await fetch('/cart');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('cartCount').textContent = data.itemCount || 0;
+                }
+            } catch (error) {
+                console.error('Cart count failed:', error);
+            }
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userName').textContent = data.user.name;
+                    document.getElementById('userMenu').classList.remove('hidden');
+                    document.getElementById('loginMenu').classList.add('hidden');
+                } else {
+                    document.getElementById('userMenu').classList.add('hidden');
+                    document.getElementById('loginMenu').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            loadProducts(query, category);
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('productModal').classList.add('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            if (!messageDiv) {
+                // Create message div if it doesn't exist
+                const newMessageDiv = document.createElement('div');
+                newMessageDiv.id = 'message';
+                newMessageDiv.className = 'fixed top-4 right-4 z-50';
+                document.body.appendChild(newMessageDiv);
+            }
+            const msgDiv = document.getElementById('message');
+            msgDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            msgDiv.textContent = text;
+            msgDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                msgDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+        loadCartCount();
+        loadProducts();
+    </script>
+</body>
+</html>

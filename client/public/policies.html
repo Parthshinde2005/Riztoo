@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policies - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/help.html" class="text-gray-700 hover:text-gray-900">Help</a>
+                    <a href="/profile.html" class="text-gray-700 hover:text-gray-900">Profile</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Policies & Terms</h1>
+            <p class="text-xl text-gray-600">Transparent policies for a better experience</p>
+        </div>
+
+        <!-- Policy Navigation -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6">
+                    <button class="policy-tab active py-4 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="terms">
+                        Terms of Service
+                    </button>
+                    <button class="policy-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="privacy">
+                        Privacy Policy
+                    </button>
+                    <button class="policy-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="refund">
+                        Refund Policy
+                    </button>
+                    <button class="policy-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="vendor">
+                        Vendor Policy
+                    </button>
+                    <button class="policy-tab py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="commission">
+                        Commission Structure
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Terms of Service -->
+            <div id="terms" class="policy-content p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Terms of Service</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4"><strong>Last updated:</strong> December 2024</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">1. Acceptance of Terms</h3>
+                    <p class="text-gray-700 mb-4">
+                        By accessing and using Riztoo, you accept and agree to be bound by the terms and provision of this agreement. 
+                        If you do not agree to abide by the above, please do not use this service.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">2. Platform Description</h3>
+                    <p class="text-gray-700 mb-4">
+                        Riztoo is a multi-vendor e-commerce platform that connects local stores with customers. We facilitate 
+                        transactions between buyers and sellers but are not directly involved in the actual transaction between users.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">3. User Accounts</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>You must provide accurate and complete information when creating an account</li>
+                        <li>You are responsible for maintaining the security of your account</li>
+                        <li>You must notify us immediately of any unauthorized use of your account</li>
+                        <li>We reserve the right to suspend or terminate accounts that violate our terms</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">4. Prohibited Uses</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Selling counterfeit, illegal, or prohibited items</li>
+                        <li>Engaging in fraudulent activities</li>
+                        <li>Violating intellectual property rights</li>
+                        <li>Harassing or abusing other users</li>
+                        <li>Attempting to manipulate reviews or ratings</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Limitation of Liability</h3>
+                    <p class="text-gray-700 mb-4">
+                        Riztoo acts as an intermediary platform. We are not liable for the quality, safety, legality, 
+                        or availability of products sold by vendors. Disputes should be resolved directly between buyers and sellers.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">6. Modifications</h3>
+                    <p class="text-gray-700 mb-4">
+                        We reserve the right to modify these terms at any time. Users will be notified of significant changes 
+                        via email or platform notifications.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Privacy Policy -->
+            <div id="privacy" class="policy-content p-6 hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Privacy Policy</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4"><strong>Last updated:</strong> December 2024</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">1. Information We Collect</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li><strong>Personal Information:</strong> Name, email, phone number, address</li>
+                        <li><strong>Payment Information:</strong> Processed securely through Razorpay (PCI DSS compliant)</li>
+                        <li><strong>Usage Data:</strong> How you interact with our platform</li>
+                        <li><strong>Device Information:</strong> Browser type, IP address, device identifiers</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">2. How We Use Your Information</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>To provide and maintain our services</li>
+                        <li>To process transactions and send confirmations</li>
+                        <li>To communicate with you about orders and updates</li>
+                        <li>To improve our platform and user experience</li>
+                        <li>To comply with legal obligations</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">3. Information Sharing</h3>
+                    <p class="text-gray-700 mb-4">
+                        We do not sell or rent your personal information. We may share information with:
+                    </p>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Vendors (only order-related information)</li>
+                        <li>Payment processors (Razorpay) for transaction processing</li>
+                        <li>Legal authorities when required by law</li>
+                        <li>Service providers who assist in platform operations</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">4. Data Security</h3>
+                    <p class="text-gray-700 mb-4">
+                        We implement appropriate security measures to protect your personal information against 
+                        unauthorized access, alteration, disclosure, or destruction.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Your Rights</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Access and update your personal information</li>
+                        <li>Request deletion of your account and data</li>
+                        <li>Opt-out of marketing communications</li>
+                        <li>Request data portability</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">6. Contact Us</h3>
+                    <p class="text-gray-700 mb-4">
+                        For privacy-related questions, contact us at privacy@riztoo.com
+                    </p>
+                </div>
+            </div>
+
+            <!-- Refund Policy -->
+            <div id="refund" class="policy-content p-6 hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Refund Policy</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4"><strong>Last updated:</strong> December 2024</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">1. General Refund Policy</h3>
+                    <p class="text-gray-700 mb-4">
+                        Refunds are handled by individual vendors according to their specific policies. 
+                        Riztoo facilitates the refund process but does not directly process refunds.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">2. Refund Eligibility</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Items must be returned in original condition</li>
+                        <li>Refund requests must be made within the vendor's specified timeframe</li>
+                        <li>Perishable items may not be eligible for refunds</li>
+                        <li>Custom or personalized items may have different policies</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">3. Refund Process</h3>
+                    <ol class="list-decimal list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Contact the vendor directly through the platform</li>
+                        <li>Provide order details and reason for refund</li>
+                        <li>Follow vendor's return instructions</li>
+                        <li>Vendor processes refund after receiving returned item</li>
+                        <li>Refund credited to original payment method within 5-7 business days</li>
+                    </ol>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">4. Platform Guarantee</h3>
+                    <p class="text-gray-700 mb-4">
+                        If a vendor fails to respond to refund requests or violates our policies, 
+                        Riztoo may intervene to ensure fair resolution.
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Dispute Resolution</h3>
+                    <p class="text-gray-700 mb-4">
+                        For unresolved disputes, contact our support team at support@riztoo.com. 
+                        We will mediate between customers and vendors to reach a fair solution.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Vendor Policy -->
+            <div id="vendor" class="policy-content p-6 hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Vendor Policy</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4"><strong>Last updated:</strong> December 2024</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">1. Vendor Registration</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Complete business verification process</li>
+                        <li>Provide valid business documents (PAN, GST if applicable)</li>
+                        <li>Set up payment details for settlements</li>
+                        <li>Agree to platform terms and commission structure</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">2. Product Listing Requirements</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Accurate product descriptions and images</li>
+                        <li>Competitive and fair pricing</li>
+                        <li>Maintain adequate inventory levels</li>
+                        <li>Comply with local laws and regulations</li>
+                        <li>No counterfeit or prohibited items</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">3. Order Management</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Process orders within 24 hours</li>
+                        <li>Update order status promptly</li>
+                        <li>Provide tracking information when available</li>
+                        <li>Handle customer inquiries professionally</li>
+                        <li>Maintain high service standards</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">4. Quality Standards</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Maintain minimum 4.0-star rating</li>
+                        <li>Respond to customer messages within 24 hours</li>
+                        <li>Honor return and refund policies</li>
+                        <li>Provide quality products as described</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Prohibited Activities</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Manipulating reviews or ratings</li>
+                        <li>Selling outside the platform to avoid fees</li>
+                        <li>Providing false or misleading information</li>
+                        <li>Engaging in unfair competition practices</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">6. Account Suspension</h3>
+                    <p class="text-gray-700 mb-4">
+                        Vendor accounts may be suspended for policy violations, poor performance, 
+                        or customer complaints. We provide warnings and opportunities for improvement before suspension.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Commission Structure -->
+            <div id="commission" class="policy-content p-6 hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Commission Structure</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4"><strong>Last updated:</strong> December 2024</p>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">1. Commission Rate</h3>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <p class="text-blue-800 font-semibold">Platform Commission: 1% per transaction</p>
+                        <p class="text-blue-700 text-sm mt-1">This is one of the lowest commission rates in the industry</p>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">2. How It Works</h3>
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Example Transaction:</h4>
+                        <ul class="text-gray-700 space-y-1">
+                            <li>Product Sale: ₹1,000</li>
+                            <li>Platform Commission (1%): ₹10</li>
+                            <li><strong>Vendor Receives: ₹990</strong></li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">3. What's Included</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Platform hosting and maintenance</li>
+                        <li>Payment processing through Razorpay</li>
+                        <li>Customer support services</li>
+                        <li>Marketing and promotional activities</li>
+                        <li>Analytics and reporting tools</li>
+                        <li>Mobile app access</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">4. No Hidden Fees</h3>
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <ul class="text-green-800 space-y-1">
+                            <li>✓ No setup fees</li>
+                            <li>✓ No monthly subscription</li>
+                            <li>✓ No listing fees</li>
+                            <li>✓ No additional transaction charges</li>
+                            <li>✓ No penalty for low sales</li>
+                            <li>✓ Free payment gateway integration</li>
+                            <li>✓ Free customer support</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Payment Schedule</h3>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-yellow-900 mb-2">Settlement Timeline:</h4>
+                        <ul class="text-yellow-800 space-y-1">
+                            <li><strong>Order Completion:</strong> When customer receives the product</li>
+                            <li><strong>Processing Time:</strong> 24-48 hours after completion</li>
+                            <li><strong>Payment Method:</strong> Direct bank transfer or UPI</li>
+                            <li><strong>Minimum Payout:</strong> ₹100 (no maximum limit)</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">6. Tax Compliance</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>TDS deduction as per government regulations</li>
+                        <li>GST handling for registered businesses</li>
+                        <li>Annual tax statements provided</li>
+                        <li>Support for tax filing requirements</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">7. Commission Comparison</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Platform</th>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Commission</th>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Additional Fees</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="bg-green-50">
+                                    <td class="px-4 py-2 font-semibold text-green-900">Riztoo</td>
+                                    <td class="px-4 py-2 text-green-800">1%</td>
+                                    <td class="px-4 py-2 text-green-800">None</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-gray-700">Other Platforms</td>
+                                    <td class="px-4 py-2 text-gray-700">5-20%</td>
+                                    <td class="px-4 py-2 text-gray-700">Setup, Monthly, Listing fees</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">5. Payment Schedule</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li><strong>Settlement Time:</strong> 24-48 hours after order completion</li>
+                        <li><strong>Payment Method:</strong> Direct bank transfer (NEFT/IMPS)</li>
+                        <li><strong>Minimum Payout:</strong> ₹100 (to reduce transaction costs)</li>
+                        <li><strong>Payment Days:</strong> Monday to Friday (excluding holidays)</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">6. Transparency</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-4 space-y-2">
+                        <li>Real-time earnings tracking in vendor dashboard</li>
+                        <li>Detailed transaction reports</li>
+                        <li>Commission breakdown for each sale</li>
+                        <li>Monthly earning statements</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">7. Future Changes</h3>
+                    <p class="text-gray-700 mb-4">
+                        Any changes to commission rates will be communicated 30 days in advance. 
+                        Existing vendors will be grandfathered at current rates for 6 months after any increase.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Questions About Our Policies?</h3>
+            <p class="text-gray-600 mb-4">We're here to help clarify any concerns you may have</p>
+            <div class="flex justify-center space-x-4">
+                <a href="mailto:legal@riztoo.com" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    Contact Legal Team
+                </a>
+                <a href="/help.html" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
+                    Visit Help Center
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Policy tab switching
+        document.querySelectorAll('.policy-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.policy-tab').forEach(t => {
+                    t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                    t.classList.add('border-transparent', 'text-gray-500');
+                });
+                
+                // Add active class to clicked tab
+                tab.classList.add('active', 'border-blue-500', 'text-blue-600');
+                tab.classList.remove('border-transparent', 'text-gray-500');
+                
+                // Hide all content
+                document.querySelectorAll('.policy-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Show target content
+                document.getElementById(targetTab).classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

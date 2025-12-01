@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Reviews - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/cart.html" class="text-gray-700 hover:text-gray-900">Cart</a>
+                    <div id="userMenu" class="hidden">
+                        <span id="userName" class="text-gray-700"></span>
+                        <a href="/profile.html" class="text-gray-700 hover:text-gray-900 ml-2">Profile</a>
+                        <button id="logoutBtn" class="text-red-600 hover:text-red-800 ml-2">Logout</button>
+                    </div>
+                    <div id="loginMenu">
+                        <a href="/login/user" class="text-blue-600 hover:text-blue-800">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Product Info -->
+        <div id="productInfo" class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <!-- Product details will be loaded here -->
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+                <button id="writeReviewBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 hidden">
+                    Write Review
+                </button>
+            </div>
+
+            <!-- Rating Summary -->
+            <div id="ratingSummary" class="mb-8">
+                <!-- Rating summary will be loaded here -->
+            </div>
+
+            <!-- Review Filters -->
+            <div class="flex space-x-4 mb-6">
+                <select id="sortFilter" class="border border-gray-300 rounded-md px-3 py-2">
+                    <option value="createdAt">Most Recent</option>
+                    <option value="rating">Highest Rating</option>
+                    <option value="helpfulCount">Most Helpful</option>
+                </select>
+                <select id="ratingFilter" class="border border-gray-300 rounded-md px-3 py-2">
+                    <option value="">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+            </div>
+
+            <!-- Reviews List -->
+            <div id="reviewsList">
+                <!-- Reviews will be loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="mt-8 flex justify-center">
+                <!-- Pagination will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Write Review Modal -->
+    <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Write a Review</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="reviewForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                        <div class="flex space-x-1" id="starRating">
+                            <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="1">★</button>
+                            <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="2">★</button>
+                            <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="3">★</button>
+                            <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="4">★</button>
+                            <button type="button" class="star text-2xl text-gray-300 hover:text-yellow-400" data-rating="5">★</button>
+                        </div>
+                        <input type="hidden" id="ratingInput" name="rating" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Review</label>
+                        <textarea id="comment" name="comment" rows="4" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Share your experience with this product..."></textarea>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelReview" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Submit Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let currentUser = null;
+        let productId = null;
+        let currentPage = 1;
+        let selectedRating = 0;
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        productId = urlParams.get('productId');
+
+        if (!productId) {
+            showMessage('Product ID not found', 'error');
+            window.location.href = '/catalog.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadProductInfo();
+            loadReviews();
+            setupEventListeners();
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    document.getElementById('userName').textContent = data.user.name;
+                    document.getElementById('userMenu').classList.remove('hidden');
+                    document.getElementById('loginMenu').classList.add('hidden');
+                    
+                    // Show write review button for customers
+                    if (data.user.role === 'customer') {
+                        document.getElementById('writeReviewBtn').classList.remove('hidden');
+                    }
+                } else {
+                    document.getElementById('userMenu').classList.add('hidden');
+                    document.getElementById('loginMenu').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Load product information
+        async function loadProductInfo() {
+            try {
+                const response = await fetch(`/products/${productId}`);
+                if (response.ok) {
+                    const product = await response.json();
+                    displayProductInfo(product);
+                } else {
+                    showMessage('Product not found', 'error');
+                }
+            } catch (error) {
+                console.error('Load product error:', error);
+                showMessage('Failed to load product', 'error');
+            }
+        }
+
+        // Display product information
+        function displayProductInfo(product) {
+            document.getElementById('productInfo').innerHTML = `
+                <div class="flex items-start space-x-6">
+                    <div class="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                        ${product.images && product.images.length > 0 
+                            ? `<img src="${product.images[0]}" alt="${product.name}" class="w-full h-full object-cover rounded-lg">`
+                            : `<svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                               </svg>`
+                        }
+                    </div>
+                    <div class="flex-1">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">${product.name}</h1>
+                        <p class="text-gray-600 mb-2">${product.description || 'No description available'}</p>
+                        <p class="text-sm text-gray-500">Category: ${product.category}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const sortBy = document.getElementById('sortFilter').value;
+                const ratingFilter = document.getElementById('ratingFilter').value;
+                
+                let url = `/reviews/product/${productId}?page=${currentPage}&sortBy=${sortBy}`;
+                if (ratingFilter) {
+                    url += `&rating=${ratingFilter}`;
+                }
+
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayRatingSummary(data);
+                    displayReviews(data.reviews);
+                    displayPagination(data.pagination);
+                } else {
+                    showMessage('Failed to load reviews', 'error');
+                }
+            } catch (error) {
+                console.error('Load reviews error:', error);
+                showMessage('Failed to load reviews', 'error');
+            }
+        }
+
+        // Display rating summary
+        function displayRatingSummary(data) {
+            const ratingDistribution = data.ratingDistribution || [];
+            const totalReviews = data.totalReviews || 0;
+            const averageRating = data.averageRating || 0;
+
+            document.getElementById('ratingSummary').innerHTML = `
+                <div class="flex items-center space-x-8">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-gray-900">${averageRating}</div>
+                        <div class="flex justify-center mb-2">
+                            ${generateStars(averageRating)}
+                        </div>
+                        <div class="text-sm text-gray-600">${totalReviews} reviews</div>
+                    </div>
+                    <div class="flex-1">
+                        ${[5,4,3,2,1].map(rating => {
+                            const count = ratingDistribution.find(r => r._id === rating)?.count || 0;
+                            const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+                            return `
+                                <div class="flex items-center mb-1">
+                                    <span class="text-sm w-8">${rating}★</span>
+                                    <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-400 h-2 rounded-full" style="width: ${percentage}%"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-600 w-8">${count}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            if (reviews.length === 0) {
+                document.getElementById('reviewsList').innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-gray-500">No reviews yet. Be the first to review this product!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('reviewsList').innerHTML = reviews.map(review => `
+                <div class="border-b border-gray-200 py-6">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-medium text-gray-900">${review.userId.name}</span>
+                                <div class="flex">${generateStars(review.rating)}</div>
+                            </div>
+                            <p class="text-sm text-gray-500">${new Date(review.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        ${review.isVerified ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Verified Purchase</span>' : ''}
+                    </div>
+                    ${review.comment ? `<p class="text-gray-700 mt-2">${review.comment}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Generate star display
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let stars = '';
+
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<span class="text-yellow-400">★</span>';
+            }
+            if (hasHalfStar) {
+                stars += '<span class="text-yellow-400">☆</span>';
+            }
+            for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
+                stars += '<span class="text-gray-300">★</span>';
+            }
+
+            return stars;
+        }
+
+        // Display pagination
+        function displayPagination(pagination) {
+            if (!pagination || pagination.totalPages <= 1) {
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+            
+            if (pagination.hasPrev) {
+                paginationHTML += `<button onclick="changePage(${pagination.currentPage - 1})" class="px-3 py-2 border border-gray-300 rounded-l-md hover:bg-gray-50">Previous</button>`;
+            }
+
+            for (let i = Math.max(1, pagination.currentPage - 2); i <= Math.min(pagination.totalPages, pagination.currentPage + 2); i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                        class="px-3 py-2 border border-gray-300 ${i === pagination.currentPage ? 'bg-blue-600 text-white' : 'hover:bg-gray-50'}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            if (pagination.hasNext) {
+                paginationHTML += `<button onclick="changePage(${pagination.currentPage + 1})" class="px-3 py-2 border border-gray-300 rounded-r-md hover:bg-gray-50">Next</button>`;
+            }
+
+            document.getElementById('pagination').innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            loadReviews();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Sort and filter changes
+            document.getElementById('sortFilter').addEventListener('change', () => {
+                currentPage = 1;
+                loadReviews();
+            });
+
+            document.getElementById('ratingFilter').addEventListener('change', () => {
+                currentPage = 1;
+                loadReviews();
+            });
+
+            // Review modal
+            document.getElementById('writeReviewBtn').addEventListener('click', openReviewModal);
+            document.getElementById('closeModal').addEventListener('click', closeReviewModal);
+            document.getElementById('cancelReview').addEventListener('click', closeReviewModal);
+
+            // Star rating
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.dataset.rating);
+                    document.getElementById('ratingInput').value = selectedRating;
+                    updateStarDisplay();
+                });
+            });
+
+            // Review form
+            document.getElementById('reviewForm').addEventListener('submit', submitReview);
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+
+        // Open review modal
+        function openReviewModal() {
+            if (!currentUser) {
+                showMessage('Please login to write a review', 'error');
+                return;
+            }
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        // Close review modal
+        function closeReviewModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+            document.getElementById('reviewForm').reset();
+            selectedRating = 0;
+            updateStarDisplay();
+        }
+
+        // Update star display
+        function updateStarDisplay() {
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        // Submit review
+        async function submitReview(e) {
+            e.preventDefault();
+
+            if (!selectedRating) {
+                showMessage('Please select a rating', 'error');
+                return;
+            }
+
+            try {
+                const formData = new FormData(e.target);
+                const reviewData = {
+                    productId: productId,
+                    rating: selectedRating,
+                    comment: formData.get('comment')
+                };
+
+                const response = await fetch('/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Review submitted successfully!', 'success');
+                    closeReviewModal();
+                    loadReviews();
+                } else {
+                    showMessage(result.error || 'Failed to submit review', 'error');
+                }
+            } catch (error) {
+                console.error('Submit review error:', error);
+                showMessage('Failed to submit review', 'error');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/auth/logout');
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

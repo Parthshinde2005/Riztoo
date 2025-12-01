@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report a Bug - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/help.html" class="text-gray-700 hover:text-gray-900">Help</a>
+                    <a href="/profile.html" class="text-gray-700 hover:text-gray-900">Profile</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Report a Bug</h1>
+            <p class="text-gray-600">Help us improve Riztoo by reporting issues you encounter</p>
+        </div>
+
+        <!-- Bug Report Form -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <form id="bugReportForm" class="space-y-6">
+                <!-- Personal Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+                        <input type="text" id="name" name="name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <!-- Bug Details -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Bug Title *</label>
+                    <input type="text" id="title" name="title" required maxlength="200"
+                        placeholder="Brief description of the issue"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <p class="text-xs text-gray-500 mt-1">Maximum 200 characters</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                        <select id="category" name="category" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="">Select a category</option>
+                            <option value="bug">Bug/Error</option>
+                            <option value="ui-issue">UI/Design Issue</option>
+                            <option value="performance">Performance Issue</option>
+                            <option value="feature-request">Feature Request</option>
+                            <option value="security">Security Concern</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                        <select id="priority" name="priority"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Detailed Description *</label>
+                    <textarea id="description" name="description" required rows="6" maxlength="2000"
+                        placeholder="Please describe the issue in detail. Include steps to reproduce the bug, what you expected to happen, and what actually happened."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Maximum 2000 characters. <span id="charCount">0/2000</span></p>
+                </div>
+
+                <!-- Steps to Reproduce -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Steps to Reproduce (Optional)</label>
+                    <div id="stepsContainer" class="space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500 w-8">1.</span>
+                            <input type="text" name="step1" placeholder="First step..."
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <button type="button" id="addStep" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                        + Add another step
+                    </button>
+                </div>
+
+                <!-- Browser Information -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Browser Information (Auto-detected)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">Browser:</span>
+                            <span id="browserInfo" class="ml-2 text-gray-900">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Screen Resolution:</span>
+                            <span id="screenInfo" class="ml-2 text-gray-900">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Current URL:</span>
+                            <span id="urlInfo" class="ml-2 text-gray-900 break-all">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Timestamp:</span>
+                            <span id="timestampInfo" class="ml-2 text-gray-900">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Attachments -->
+                <div>
+                    <label for="attachments" class="block text-sm font-medium text-gray-700 mb-1">
+                        Screenshots/Files (Optional)
+                    </label>
+                    <input type="file" id="attachments" name="attachments" multiple accept="image/*,.pdf,.txt,.log"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <p class="text-xs text-gray-500 mt-1">
+                        Upload screenshots or relevant files. Max 3 files, 5MB each. Supported: images, PDF, text files.
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/help.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <button type="submit" id="submitBtn"
+                        class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        Submit Bug Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden bg-green-50 border border-green-200 rounded-lg p-6 mt-6">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-semibold text-green-800">Bug Report Submitted Successfully!</h3>
+                    <p class="text-green-700 mt-1">
+                        Thank you for helping us improve Riztoo. We'll review your report and get back to you if needed.
+                    </p>
+                    <p class="text-green-600 text-sm mt-2">
+                        Report ID: <span id="reportId" class="font-mono"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stepCount = 1;
+
+        // Auto-fill browser information
+        function fillBrowserInfo() {
+            document.getElementById('browserInfo').textContent = navigator.userAgent;
+            document.getElementById('screenInfo').textContent = `${screen.width}x${screen.height}`;
+            document.getElementById('urlInfo').textContent = window.location.href;
+            document.getElementById('timestampInfo').textContent = new Date().toLocaleString();
+        }
+
+        // Character counter for description
+        document.getElementById('description').addEventListener('input', (e) => {
+            const count = e.target.value.length;
+            document.getElementById('charCount').textContent = `${count}/2000`;
+        });
+
+        // Add step functionality
+        document.getElementById('addStep').addEventListener('click', () => {
+            if (stepCount < 10) { // Limit to 10 steps
+                stepCount++;
+                const container = document.getElementById('stepsContainer');
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'flex items-center space-x-2';
+                stepDiv.innerHTML = `
+                    <span class="text-sm text-gray-500 w-8">${stepCount}.</span>
+                    <input type="text" name="step${stepCount}" placeholder="Step ${stepCount}..."
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button type="button" onclick="removeStep(this)" class="text-red-600 hover:text-red-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                container.appendChild(stepDiv);
+            }
+        });
+
+        // Remove step functionality
+        function removeStep(button) {
+            button.parentElement.remove();
+            // Renumber steps
+            const steps = document.querySelectorAll('#stepsContainer > div');
+            steps.forEach((step, index) => {
+                const span = step.querySelector('span');
+                const input = step.querySelector('input');
+                span.textContent = `${index + 1}.`;
+                input.name = `step${index + 1}`;
+                input.placeholder = `Step ${index + 1}...`;
+            });
+            stepCount = steps.length;
+        }
+
+        // Auto-fill user info if logged in
+        async function fillUserInfo() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('name').value = data.user.name;
+                    document.getElementById('email').value = data.user.email;
+                }
+            } catch (error) {
+                // User not logged in, that's fine
+            }
+        }
+
+        // Form submission
+        document.getElementById('bugReportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(e.target);
+                
+                // Add browser information
+                formData.append('userAgent', navigator.userAgent);
+                formData.append('url', window.location.href);
+                formData.append('screenResolution', `${screen.width}x${screen.height}`);
+
+                // Collect steps
+                const steps = [];
+                for (let i = 1; i <= stepCount; i++) {
+                    const stepValue = formData.get(`step${i}`);
+                    if (stepValue && stepValue.trim()) {
+                        steps.push(stepValue.trim());
+                    }
+                }
+                if (steps.length > 0) {
+                    formData.append('steps', JSON.stringify(steps));
+                }
+
+                const response = await fetch('/support/bug-report', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    document.getElementById('reportId').textContent = result.reportId;
+                    document.getElementById('successMessage').classList.remove('hidden');
+                    document.getElementById('bugReportForm').style.display = 'none';
+                    
+                    // Scroll to success message
+                    document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    throw new Error(result.error || 'Failed to submit bug report');
+                }
+
+            } catch (error) {
+                alert('Failed to submit bug report: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Initialize
+        fillBrowserInfo();
+        fillUserInfo();
+    </script>
+</body>
+</html>

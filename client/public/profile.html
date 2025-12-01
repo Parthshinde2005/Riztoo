@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/cart.html" class="text-gray-700 hover:text-gray-900">
+                        Cart (<span id="cartCount">0</span>)
+                    </a>
+                    <a id="vendorDashboardLink" href="/vendor-dashboard.html" class="text-green-600 hover:text-green-800 font-medium hidden">
+                        My Dashboard
+                    </a>
+                    <span id="userName" class="text-gray-700"></span>
+                    <span id="userRole" class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 hidden"></span>
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p class="text-gray-600">Manage your account and view your orders</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button id="profileTab" class="tab-btn active py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600">
+                        Profile Info
+                    </button>
+                    <button id="ordersTab" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+                        Order History
+                    </button>
+                    <button id="reviewsTab" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+                        My Reviews
+                    </button>
+                    <button id="storeTab" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hidden">
+                        My Store
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Profile Info Tab -->
+        <div id="profileContent" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+                <form id="profileForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="profileName" name="name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="profileEmail" name="email" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Type</label>
+                        <input type="text" id="profileRole" readonly
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">
+                    </div>
+
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="ordersContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <h2 class="text-xl font-semibold">Order History</h2>
+                </div>
+                <div id="ordersList" class="divide-y">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div id="reviewsContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <h2 class="text-xl font-semibold">My Reviews</h2>
+                </div>
+                <div id="reviewsList" class="divide-y">
+                    <!-- Reviews will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Tab (Vendor Only) -->
+        <div id="storeContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <h2 class="text-xl font-semibold">My Store Management</h2>
+                    <p class="text-gray-600 mt-1">Manage your store, products, and orders</p>
+                </div>
+                <div class="p-6">
+                    <!-- Store Quick Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-blue-600">Total Products</p>
+                                    <p id="totalProducts" class="text-2xl font-bold text-blue-900">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-green-600">Total Orders</p>
+                                    <p id="totalOrders" class="text-2xl font-bold text-green-900">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-yellow-100 rounded-lg">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-yellow-600">Total Revenue</p>
+                                    <p id="totalRevenue" class="text-2xl font-bold text-yellow-900">₹-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Store Actions -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                        <a href="/vendor-dashboard.html" class="block p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105">
+                            <div class="flex items-center">
+                                <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Full Dashboard</h3>
+                                    <p class="text-blue-100 text-sm">Complete store management</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <button onclick="quickAddProduct()" class="p-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105">
+                            <div class="flex items-center">
+                                <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold">Add Product</h3>
+                                    <p class="text-green-100 text-sm">Quick product creation</p>
+                                </div>
+                            </div>
+                        </button>
+
+                        <button onclick="viewOrders()" class="p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
+                            <div class="flex items-center">
+                                <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold">View Orders</h3>
+                                    <p class="text-purple-100 text-sm">Manage customer orders</p>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Store Information -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4">Store Information</h3>
+                        <div id="storeInfo" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Store info will be loaded here -->
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="editStoreInfo()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                                Edit Store Info
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Write Review</h2>
+                        <button id="closeReviewModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <form id="reviewForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                            <input type="text" id="reviewProductName" readonly
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="star-btn text-2xl text-gray-300 hover:text-yellow-400" data-rating="1">★</button>
+                                <button type="button" class="star-btn text-2xl text-gray-300 hover:text-yellow-400" data-rating="2">★</button>
+                                <button type="button" class="star-btn text-2xl text-gray-300 hover:text-yellow-400" data-rating="3">★</button>
+                                <button type="button" class="star-btn text-2xl text-gray-300 hover:text-yellow-400" data-rating="4">★</button>
+                                <button type="button" class="star-btn text-2xl text-gray-300 hover:text-yellow-400" data-rating="5">★</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                            <textarea id="reviewComment" name="comment" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+
+                        <input type="hidden" id="reviewOrderId" name="orderId">
+                        <input type="hidden" id="reviewProductId" name="productId">
+                        <input type="hidden" id="reviewVendorId" name="vendorId">
+                        <input type="hidden" id="reviewRating" name="rating" value="5">
+
+                        <div class="flex justify-end space-x-4">
+                            <button type="button" id="cancelReview" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                                Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let currentUser = null;
+        let selectedRating = 5;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    
+                    if (currentUser.isGuest) {
+                        showMessage('Please register to access profile features', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/register.html';
+                        }, 2000);
+                        return;
+                    }
+
+                    document.getElementById('userName').textContent = currentUser.name;
+                    
+                    // Show vendor-specific elements
+                    if (currentUser.role === 'vendor') {
+                        document.getElementById('storeTab').classList.remove('hidden');
+                        document.getElementById('vendorDashboardLink').classList.remove('hidden');
+                        document.getElementById('userRole').textContent = 'Vendor';
+                        document.getElementById('userRole').classList.remove('hidden');
+                        document.getElementById('userRole').className = 'text-xs px-2 py-1 rounded-full bg-green-100 text-green-800';
+                    } else if (currentUser.role === 'admin') {
+                        document.getElementById('userRole').textContent = 'Admin';
+                        document.getElementById('userRole').classList.remove('hidden');
+                        document.getElementById('userRole').className = 'text-xs px-2 py-1 rounded-full bg-red-100 text-red-800';
+                    } else {
+                        document.getElementById('userRole').textContent = 'Customer';
+                        document.getElementById('userRole').classList.remove('hidden');
+                        document.getElementById('userRole').className = 'text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800';
+                    }
+                    
+                    loadProfile();
+                } else {
+                    window.location.href = '/login/user';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login/user';
+            }
+        }
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const response = await fetch(`/users/${currentUser.id}`);
+                if (response.ok) {
+                    const user = await response.json();
+                    populateProfile(user);
+                }
+            } catch (error) {
+                console.error('Load profile error:', error);
+            }
+        }
+
+        // Populate profile form
+        function populateProfile(user) {
+            document.getElementById('profileName').value = user.name;
+            document.getElementById('profileEmail').value = user.email;
+            document.getElementById('profileRole').value = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/orders/my-orders');
+                if (response.ok) {
+                    const orders = await response.json();
+                    displayOrders(orders);
+                }
+            } catch (error) {
+                console.error('Load orders error:', error);
+            }
+        }
+
+        // Display orders
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<p class="p-6 text-gray-500 text-center">No orders yet.</p>';
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold">Order #${order._id.slice(-8)}</h3>
+                            <p class="text-sm text-gray-600">Placed on ${new Date(order.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-2 py-1 text-xs rounded ${order.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${order.status}
+                            </span>
+                            <p class="text-lg font-semibold mt-1">₹${order.totalAmount.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        ${order.items.map(item => `
+                            <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
+                                <div class="flex-1">
+                                    <h4 class="font-medium">${item.productId.name}</h4>
+                                    <p class="text-sm text-gray-600">From: ${item.vendorId.storeName}</p>
+                                    <p class="text-sm text-gray-500">Qty: ${item.qty} × ₹${item.price.toLocaleString()}</p>
+                                </div>
+                                ${order.status === 'paid' ? `
+                                    <button onclick="writeReview('${order._id}', '${item.productId._id}', '${item.vendorId._id}', '${item.productId.name}')" 
+                                        class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        Write Review
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const response = await fetch('/reviews/my-reviews');
+                if (response.ok) {
+                    const reviews = await response.json();
+                    displayReviews(reviews);
+                }
+            } catch (error) {
+                console.error('Load reviews error:', error);
+            }
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviewsList');
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p class="p-6 text-gray-500 text-center">No reviews yet.</p>';
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-lg font-semibold">${review.productId.name}</h3>
+                            <p class="text-sm text-gray-600">Store: ${review.vendorId.storeName}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex text-yellow-400 mb-1">
+                                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                            </div>
+                            <p class="text-xs text-gray-500">${new Date(review.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    ${review.comment ? `<p class="text-gray-700">${review.comment}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Write review
+        function writeReview(orderId, productId, vendorId, productName) {
+            document.getElementById('reviewOrderId').value = orderId;
+            document.getElementById('reviewProductId').value = productId;
+            document.getElementById('reviewVendorId').value = vendorId;
+            document.getElementById('reviewProductName').value = productName;
+            document.getElementById('reviewComment').value = '';
+            
+            // Reset stars
+            document.querySelectorAll('.star-btn').forEach((star, index) => {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
+                if (index < selectedRating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                }
+            });
+
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show selected content and activate tab
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            const activeTab = document.getElementById(tabName + 'Tab');
+            activeTab.classList.add('active', 'border-blue-500', 'text-blue-600');
+            activeTab.classList.remove('border-transparent', 'text-gray-500');
+
+            // Load data for the active tab
+            if (tabName === 'orders') {
+                loadOrders();
+            } else if (tabName === 'reviews') {
+                loadReviews();
+            } else if (tabName === 'store') {
+                loadStoreStats();
+            }
+        }
+
+        // Load cart count
+        async function loadCartCount() {
+            try {
+                const response = await fetch('/cart');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('cartCount').textContent = data.itemCount || 0;
+                }
+            } catch (error) {
+                console.error('Cart count failed:', error);
+            }
+        }
+
+        // Load store stats (vendor only)
+        async function loadStoreStats() {
+            if (currentUser.role !== 'vendor') return;
+            
+            try {
+                const [productsResponse, ordersResponse, storeResponse] = await Promise.all([
+                    fetch('/products/my-products'),
+                    fetch('/orders/vendor-orders'),
+                    fetch('/vendors/my-store')
+                ]);
+
+                if (productsResponse.ok) {
+                    const products = await productsResponse.json();
+                    document.getElementById('totalProducts').textContent = products.length;
+                }
+
+                if (ordersResponse.ok) {
+                    const orders = await ordersResponse.json();
+                    document.getElementById('totalOrders').textContent = orders.length;
+                    
+                    // Calculate total revenue
+                    const totalRevenue = orders.reduce((sum, order) => {
+                        return sum + order.items.reduce((itemSum, item) => {
+                            return itemSum + (item.price * item.qty);
+                        }, 0);
+                    }, 0);
+                    document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
+                }
+
+                if (storeResponse.ok) {
+                    const store = await storeResponse.json();
+                    displayStoreInfo(store);
+                }
+            } catch (error) {
+                console.error('Load store stats error:', error);
+            }
+        }
+
+        // Display store information
+        function displayStoreInfo(store) {
+            const container = document.getElementById('storeInfo');
+            container.innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Store Name</label>
+                    <p class="mt-1 text-sm text-gray-900">${store.storeName}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Company Name</label>
+                    <p class="mt-1 text-sm text-gray-900">${store.companyName || 'Not specified'}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Verification Status</label>
+                    <span class="mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${store.verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                        ${store.verified ? 'Verified' : 'Pending Verification'}
+                    </span>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Store Description</label>
+                    <p class="mt-1 text-sm text-gray-900">${store.description || 'No description provided'}</p>
+                </div>
+            `;
+        }
+
+        // Quick add product
+        function quickAddProduct() {
+            window.location.href = '/vendor-dashboard.html#add-product';
+        }
+
+        // View orders
+        function viewOrders() {
+            window.location.href = '/vendor-dashboard.html#orders';
+        }
+
+        // Edit store info
+        function editStoreInfo() {
+            window.location.href = '/vendor-dashboard.html#store-settings';
+        }
+
+        // Event listeners
+        document.getElementById('profileTab').addEventListener('click', () => switchTab('profile'));
+        document.getElementById('ordersTab').addEventListener('click', () => switchTab('orders'));
+        document.getElementById('reviewsTab').addEventListener('click', () => switchTab('reviews'));
+        document.getElementById('storeTab').addEventListener('click', () => switchTab('store'));
+
+        // Star rating
+        document.querySelectorAll('.star-btn').forEach(star => {
+            star.addEventListener('click', (e) => {
+                selectedRating = parseInt(e.target.dataset.rating);
+                document.getElementById('reviewRating').value = selectedRating;
+                
+                document.querySelectorAll('.star-btn').forEach((s, index) => {
+                    s.classList.remove('text-yellow-400');
+                    s.classList.add('text-gray-300');
+                    if (index < selectedRating) {
+                        s.classList.remove('text-gray-300');
+                        s.classList.add('text-yellow-400');
+                    }
+                });
+            });
+        });
+
+        // Profile form submission
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`/users/${currentUser.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Profile updated successfully', 'success');
+                    currentUser.name = data.name;
+                    currentUser.email = data.email;
+                    document.getElementById('userName').textContent = currentUser.name;
+                } else {
+                    showMessage(result.error || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                console.error('Update profile error:', error);
+                showMessage('Failed to update profile', 'error');
+            }
+        });
+
+        // Review form submission
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Review submitted successfully', 'success');
+                    document.getElementById('reviewModal').classList.add('hidden');
+                    loadReviews();
+                } else {
+                    showMessage(result.error || 'Failed to submit review', 'error');
+                }
+            } catch (error) {
+                console.error('Submit review error:', error);
+                showMessage('Failed to submit review', 'error');
+            }
+        });
+
+        // Modal controls
+        document.getElementById('closeReviewModal').addEventListener('click', () => {
+            document.getElementById('reviewModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelReview').addEventListener('click', () => {
+            document.getElementById('reviewModal').classList.add('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+        loadCartCount();
+    </script>
+</body>
+</html>

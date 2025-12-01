@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Setup - Riztoo Vendor</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                    <span class="ml-4 text-sm text-gray-500">Vendor Portal</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/vendor-dashboard.html" class="text-gray-700 hover:text-gray-900">Dashboard</a>
+                    <a href="/help.html" class="text-gray-700 hover:text-gray-900">Help</a>
+                    <span id="userName" class="text-gray-700"></span>
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment Setup</h1>
+            <p class="text-gray-600">Configure your payment details to receive earnings from sales</p>
+        </div>
+
+        <!-- Commission Info -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <div class="flex items-start">
+                <svg class="w-6 h-6 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2">Commission Structure</h3>
+                    <p class="text-blue-800 mb-2">
+                        <strong>Platform Commission: 1%</strong> - One of the lowest in the industry!
+                    </p>
+                    <p class="text-blue-700 text-sm">
+                        For every ₹100 sale, you receive ₹99. Payments are processed within 24-48 hours after order completion.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Setup Form -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold text-gray-900">Payment Information</h2>
+                <p class="text-gray-600 mt-1">All information is encrypted and secure</p>
+            </div>
+
+            <form id="paymentSetupForm" class="p-6 space-y-8">
+                <!-- Bank Details -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        Bank Account Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="accountHolderName" class="block text-sm font-medium text-gray-700 mb-1">Account Holder Name *</label>
+                            <input type="text" id="accountHolderName" name="accountHolderName" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="accountNumber" class="block text-sm font-medium text-gray-700 mb-1">Account Number *</label>
+                            <input type="text" id="accountNumber" name="accountNumber" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="ifscCode" class="block text-sm font-medium text-gray-700 mb-1">IFSC Code *</label>
+                            <input type="text" id="ifscCode" name="ifscCode" required pattern="[A-Z]{4}0[A-Z0-9]{6}"
+                                placeholder="e.g., SBIN0001234"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="bankName" class="block text-sm font-medium text-gray-700 mb-1">Bank Name *</label>
+                            <input type="text" id="bankName" name="bankName" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="branchName" class="block text-sm font-medium text-gray-700 mb-1">Branch Name</label>
+                            <input type="text" id="branchName" name="branchName"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPI Details -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        UPI Details (Optional)
+                    </h3>
+                    <div>
+                        <label for="upiId" class="block text-sm font-medium text-gray-700 mb-1">UPI ID</label>
+                        <input type="text" id="upiId" name="upiId" placeholder="yourname@paytm"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p class="text-xs text-gray-500 mt-1">Alternative payment method for faster settlements</p>
+                    </div>
+                </div>
+
+                <!-- PAN Details -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        PAN Card Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="panNumber" class="block text-sm font-medium text-gray-700 mb-1">PAN Number *</label>
+                            <input type="text" id="panNumber" name="panNumber" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
+                                placeholder="ABCDE1234F"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div>
+                            <label for="panName" class="block text-sm font-medium text-gray-700 mb-1">Name on PAN *</label>
+                            <input type="text" id="panName" name="panName" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Required for tax compliance and payment processing</p>
+                </div>
+
+                <!-- GST Details -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        GST Details (If Applicable)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="gstNumber" class="block text-sm font-medium text-gray-700 mb-1">GST Number</label>
+                            <input type="text" id="gstNumber" name="gstNumber" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"
+                                placeholder="22AAAAA0000A1Z5"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                        <div>
+                            <label for="gstName" class="block text-sm font-medium text-gray-700 mb-1">Business Name on GST</label>
+                            <input type="text" id="gstName" name="gstName"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Required if your annual turnover exceeds ₹20 lakhs</p>
+                </div>
+
+                <!-- Terms Agreement -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-start">
+                        <input type="checkbox" id="agreeTerms" required
+                            class="mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <div class="ml-3">
+                            <label for="agreeTerms" class="text-sm text-gray-700">
+                                I agree to the <a href="/policies.html" target="_blank" class="text-blue-600 hover:text-blue-800">Terms of Service</a>, 
+                                <a href="/policies.html" target="_blank" class="text-blue-600 hover:text-blue-800">Privacy Policy</a>, and 
+                                <a href="/policies.html" target="_blank" class="text-blue-600 hover:text-blue-800">Commission Structure</a> (1% per transaction)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/vendor-dashboard.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <button type="submit" id="submitBtn"
+                        class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        Save Payment Details
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Verification Status -->
+        <div id="verificationStatus" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Verification Status</h3>
+            <div id="statusContent">
+                <!-- Status will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let currentUser = null;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    
+                    if (currentUser.role !== 'vendor') {
+                        showMessage('Access denied. Vendor role required.', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 2000);
+                        return;
+                    }
+
+                    document.getElementById('userName').textContent = currentUser.name;
+                    loadExistingPaymentDetails();
+                } else {
+                    window.location.href = '/login/vendor';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login/vendor';
+            }
+        }
+
+        // Load existing payment details
+        async function loadExistingPaymentDetails() {
+            try {
+                const response = await fetch('/payments/vendor/details');
+                if (response.ok) {
+                    const paymentDetails = await response.json();
+                    if (paymentDetails.bankDetails) {
+                        populateForm(paymentDetails);
+                        showVerificationStatus(paymentDetails);
+                    }
+                }
+            } catch (error) {
+                console.error('Load payment details error:', error);
+            }
+        }
+
+        // Populate form with existing data
+        function populateForm(paymentDetails) {
+            const { bankDetails, upiDetails, panDetails, gstDetails } = paymentDetails;
+            
+            if (bankDetails) {
+                document.getElementById('accountHolderName').value = bankDetails.accountHolderName || '';
+                document.getElementById('accountNumber').value = bankDetails.accountNumber || '';
+                document.getElementById('ifscCode').value = bankDetails.ifscCode || '';
+                document.getElementById('bankName').value = bankDetails.bankName || '';
+                document.getElementById('branchName').value = bankDetails.branchName || '';
+            }
+            
+            if (upiDetails) {
+                document.getElementById('upiId').value = upiDetails.upiId || '';
+            }
+            
+            if (panDetails) {
+                document.getElementById('panNumber').value = panDetails.panNumber || '';
+                document.getElementById('panName').value = panDetails.panName || '';
+            }
+            
+            if (gstDetails) {
+                document.getElementById('gstNumber').value = gstDetails.gstNumber || '';
+                document.getElementById('gstName').value = gstDetails.gstName || '';
+            }
+        }
+
+        // Show verification status
+        function showVerificationStatus(paymentDetails) {
+            const statusDiv = document.getElementById('verificationStatus');
+            const contentDiv = document.getElementById('statusContent');
+            
+            const status = paymentDetails.verificationStatus || 'pending';
+            const statusColors = {
+                pending: 'yellow',
+                verified: 'green',
+                rejected: 'red'
+            };
+            
+            const color = statusColors[status];
+            
+            contentDiv.innerHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="w-3 h-3 bg-${color}-500 rounded-full mr-3"></div>
+                    <span class="text-${color}-800 font-semibold capitalize">${status}</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Bank Details:</span>
+                        <span class="ml-2 text-${paymentDetails.bankDetails ? 'green' : 'red'}-600">
+                            ${paymentDetails.bankDetails ? '✓ Provided' : '✗ Missing'}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">PAN Details:</span>
+                        <span class="ml-2 text-${paymentDetails.panDetails?.verified ? 'green' : 'yellow'}-600">
+                            ${paymentDetails.panDetails?.verified ? '✓ Verified' : '⏳ Pending'}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">GST Details:</span>
+                        <span class="ml-2 text-${paymentDetails.gstDetails?.verified ? 'green' : 'gray'}-600">
+                            ${paymentDetails.gstDetails?.gstNumber ? (paymentDetails.gstDetails.verified ? '✓ Verified' : '⏳ Pending') : 'Not provided'}
+                        </span>
+                    </div>
+                </div>
+                ${paymentDetails.verificationNotes ? `
+                    <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+                        <p class="text-sm text-gray-700"><strong>Notes:</strong> ${paymentDetails.verificationNotes}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            statusDiv.classList.remove('hidden');
+        }
+
+        // Form validation
+        function validateForm() {
+            const requiredFields = ['accountHolderName', 'accountNumber', 'ifscCode', 'bankName', 'panNumber', 'panName'];
+            let isValid = true;
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.classList.add('border-red-500');
+                    isValid = false;
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            // Validate IFSC code format
+            const ifscCode = document.getElementById('ifscCode').value;
+            const ifscPattern = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+            if (ifscCode && !ifscPattern.test(ifscCode)) {
+                document.getElementById('ifscCode').classList.add('border-red-500');
+                showMessage('Invalid IFSC code format', 'error');
+                isValid = false;
+            }
+
+            // Validate PAN format
+            const panNumber = document.getElementById('panNumber').value;
+            const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (panNumber && !panPattern.test(panNumber)) {
+                document.getElementById('panNumber').classList.add('border-red-500');
+                showMessage('Invalid PAN number format', 'error');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Form submission
+        document.getElementById('paymentSetupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                const response = await fetch('/payments/vendor/setup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Payment details saved successfully! Verification will be completed within 1-3 business days.', 'success');
+                    showVerificationStatus(result.vendorPayment);
+                } else {
+                    throw new Error(result.error || 'Failed to save payment details');
+                }
+
+            } catch (error) {
+                console.error('Payment setup error:', error);
+                showMessage('Failed to save payment details: ' + error.message, 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

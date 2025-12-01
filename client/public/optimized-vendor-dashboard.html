@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/optimized-utils.js"></script>
+    <style>
+        /* Optimized CSS for better performance */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .loading { opacity: 0.6; pointer-events: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Optimize table rendering */
+        .data-table { table-layout: fixed; }
+        .data-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                    <span class="ml-4 text-sm text-gray-500">Vendor Portal</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userName" class="text-gray-700"></span>
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Stats -->
+        <div id="dashboardStats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="products">Products</button>
+                    <button class="tab-btn" data-tab="orders">Orders</button>
+                    <button class="tab-btn" data-tab="reviews">Reviews</button>
+                    <button class="tab-btn" data-tab="analytics">Analytics</button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Recent Orders -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Recent Orders</h3>
+                    <div id="recentOrders">Loading...</div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button onclick="showAddProductModal()" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                            Add New Product
+                        </button>
+                        <button onclick="switchTab('products')" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Manage Products
+                        </button>
+                        <button onclick="switchTab('analytics')" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                            View Analytics
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="products" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Product Management</h3>
+                    <div class="flex space-x-4">
+                        <input type="text" id="productSearch" placeholder="Search products..." 
+                               class="px-3 py-2 border border-gray-300 rounded-md">
+                        <button onclick="showAddProductModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            Add Product
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Products Table -->
+                <div class="overflow-x-auto">
+                    <table id="productsTable" class="data-table min-w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Product</th>
+                                <th class="px-4 py-2 text-left">Price</th>
+                                <th class="px-4 py-2 text-left">Stock</th>
+                                <th class="px-4 py-2 text-left">Status</th>
+                                <th class="px-4 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="productsPagination" class="mt-4 flex justify-center"></div>
+            </div>
+        </div>
+
+        <div id="orders" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-6">Order Management</h3>
+                
+                <!-- Orders Filters -->
+                <div class="flex space-x-4 mb-6">
+                    <select id="orderStatusFilter" class="border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <input type="date" id="orderDateFrom" class="border border-gray-300 rounded-md px-3 py-2">
+                    <input type="date" id="orderDateTo" class="border border-gray-300 rounded-md px-3 py-2">
+                </div>
+
+                <!-- Orders Table -->
+                <div id="ordersContainer">
+                    <!-- Orders will be loaded here with virtual scrolling -->
+                </div>
+            </div>
+        </div>
+
+        <div id="reviews" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-6">Customer Reviews</h3>
+                <div id="reviewsContainer">
+                    <!-- Reviews will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-6">Sales Analytics</h3>
+                <div id="analyticsContainer">
+                    <!-- Analytics will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6 max-h-screen overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Add New Product</h3>
+                    <button onclick="closeAddProductModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="addProductForm" class="space-y-4">
+                    <!-- Product Selection Method -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Selection</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="productMethod" value="existing" checked class="mr-2">
+                                <span>Select from Catalog</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="productMethod" value="new" class="mr-2">
+                                <span>Create New Product</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Existing Product Selection -->
+                    <div id="existingProductSection">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search Product</label>
+                        <input type="text" id="productSearchInput" placeholder="Type to search products..." 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        <div id="productSearchResults" class="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md hidden"></div>
+                        <input type="hidden" id="selectedProductId" name="productId">
+                        <div id="selectedProductDisplay" class="mt-2 hidden p-3 bg-blue-50 rounded-md">
+                            <span id="selectedProductName" class="font-medium"></span>
+                            <button type="button" onclick="clearProductSelection()" class="ml-2 text-red-600 text-sm">Clear</button>
+                        </div>
+                    </div>
+
+                    <!-- New Product Section -->
+                    <div id="newProductSection" class="hidden space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+                            <input type="text" id="newProductName" name="productName" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                            <select id="newProductCategory" name="category" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Books">Books</option>
+                                <option value="Home">Home & Kitchen</option>
+                                <option value="Sports">Sports & Fitness</option>
+                                <option value="Grocery">Grocery</option>
+                                <option value="Beauty">Beauty & Personal Care</option>
+                                <option value="Toys">Toys & Games</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="newProductDescription" name="description" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Common Fields -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                        <input type="text" id="companyName" name="companyName" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Price (₹) *</label>
+                            <input type="number" id="productPrice" name="price" min="0.01" step="0.01" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Stock *</label>
+                            <input type="number" id="productStock" name="stock" min="0" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Images (Max 5)</label>
+                        <input type="file" id="productImages" name="images" accept="image/*" multiple
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">Supported: JPG, PNG, GIF, WEBP (Max 5MB each)</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeAddProductModal()" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitProductBtn"
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Add Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        class OptimizedVendorDashboard {
+            constructor() {
+                this.currentTab = 'overview';
+                this.vendorData = null;
+                this.productsData = [];
+                this.ordersData = [];
+                this.currentPage = { products: 1, orders: 1 };
+                this.filters = { products: {}, orders: {} };
+                
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuth();
+                await this.loadDashboardData();
+                this.setupEventListeners();
+                this.setupOptimizedSearch();
+            }
+
+            async checkAuth() {
+                try {
+                    const result = await optimizedUtils.makeRequest('/auth/me', {}, 'user_auth');
+                    if (result.success && result.data.user.role === 'vendor') {
+                        this.currentUser = result.data.user;
+                        document.getElementById('userName').textContent = result.data.user.name;
+                    } else {
+                        window.location.href = '/login/vendor';
+                    }
+                } catch (error) {
+                    window.location.href = '/login/vendor';
+                }
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Load vendor data with caching
+                    const result = await optimizedUtils.makeRequest('/vendors/me', {}, 'vendor_profile');
+                    if (result.success) {
+                        this.vendorData = result.data;
+                        this.renderDashboardStats();
+                    }
+                } catch (error) {
+                    console.error('Load dashboard data error:', error);
+                }
+            }
+
+            renderDashboardStats() {
+                const stats = [
+                    { label: 'Total Products', value: this.vendorData.totalProducts || 0, color: 'blue' },
+                    { label: 'Total Orders', value: this.vendorData.totalOrders || 0, color: 'green' },
+                    { label: 'Revenue', value: `₹${(this.vendorData.totalRevenue || 0).toLocaleString()}`, color: 'purple' },
+                    { label: 'Rating', value: `${(this.vendorData.averageRating || 0).toFixed(1)} ⭐`, color: 'yellow' }
+                ];
+
+                const statsHTML = stats.map(stat => `
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-sm font-medium text-gray-500">${stat.label}</h3>
+                        <p class="text-2xl font-bold text-${stat.color}-600">${stat.value}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('dashboardStats').innerHTML = statsHTML;
+            }
+
+            setupEventListeners() {
+                // Tab switching with optimized rendering
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const tab = e.target.dataset.tab;
+                        this.switchTab(tab);
+                    });
+                });
+
+                // Optimized product search
+                const productSearch = document.getElementById('productSearch');
+                if (productSearch) {
+                    optimizedUtils.createOptimizedSearch(productSearch, this.searchProducts.bind(this), {
+                        delay: 300,
+                        minLength: 2
+                    });
+                }
+
+                // Order filters
+                ['orderStatusFilter', 'orderDateFrom', 'orderDateTo'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('change', () => {
+                            this.loadOrders();
+                        });
+                    }
+                });
+            }
+
+            setupOptimizedSearch() {
+                // Debounced search for products
+                const searchInput = document.getElementById('productSearch');
+                if (searchInput) {
+                    let searchTimeout;
+                    searchInput.addEventListener('input', (e) => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {
+                            this.filterProducts(e.target.value);
+                        }, 300);
+                    });
+                }
+            }
+
+            async switchTab(tabName) {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Remove active class from all buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Show selected tab
+                const tabContent = document.getElementById(tabName);
+                const tabBtn = document.querySelector(`[data-tab="${tabName}"]`);
+                
+                if (tabContent && tabBtn) {
+                    tabContent.classList.add('active', 'fade-in');
+                    tabBtn.classList.add('active');
+                    this.currentTab = tabName;
+
+                    // Load data for specific tabs
+                    switch (tabName) {
+                        case 'products':
+                            await this.loadProducts();
+                            break;
+                        case 'orders':
+                            await this.loadOrders();
+                            break;
+                        case 'reviews':
+                            await this.loadReviews();
+                            break;
+                        case 'analytics':
+                            await this.loadAnalytics();
+                            break;
+                    }
+                }
+            }
+
+            async loadProducts() {
+                try {
+                    const result = await optimizedUtils.makeRequest('/vendors/products', {}, 'vendor_products');
+                    if (result.success) {
+                        this.productsData = result.data;
+                        this.renderProductsTable();
+                    }
+                } catch (error) {
+                    console.error('Load products error:', error);
+                }
+            }
+
+            renderProductsTable() {
+                const tbody = document.getElementById('productsTableBody');
+                if (!tbody) return;
+
+                const productsHTML = this.productsData.map(product => `
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="px-4 py-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gray-200 rounded mr-3"></div>
+                                <div>
+                                    <div class="font-medium">${product.productId?.name || 'Unknown'}</div>
+                                    <div class="text-sm text-gray-500">${product.productId?.category || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-2">₹${product.price?.toLocaleString()}</td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-1 text-xs rounded ${product.stock > 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${product.stock} units
+                            </span>
+                        </td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Active</span>
+                        </td>
+                        <td class="px-4 py-2">
+                            <button onclick="dashboard.editProduct('${product._id}')" class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                            <button onclick="dashboard.deleteProduct('${product._id}')" class="text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                tbody.innerHTML = productsHTML;
+            }
+
+            async loadOrders() {
+                try {
+                    const filters = {
+                        status: document.getElementById('orderStatusFilter')?.value,
+                        dateFrom: document.getElementById('orderDateFrom')?.value,
+                        dateTo: document.getElementById('orderDateTo')?.value
+                    };
+
+                    const queryParams = new URLSearchParams();
+                    Object.keys(filters).forEach(key => {
+                        if (filters[key]) queryParams.append(key, filters[key]);
+                    });
+
+                    const result = await optimizedUtils.makeRequest(
+                        `/orders/vendor/my-orders?${queryParams}`, 
+                        {}, 
+                        `vendor_orders_${JSON.stringify(filters)}`
+                    );
+
+                    if (result.success) {
+                        this.ordersData = result.data.orders || [];
+                        this.renderOrdersWithVirtualScrolling();
+                    }
+                } catch (error) {
+                    console.error('Load orders error:', error);
+                }
+            }
+
+            renderOrdersWithVirtualScrolling() {
+                const container = document.getElementById('ordersContainer');
+                if (!container) return;
+
+                // Use virtual scrolling for large datasets
+                optimizedUtils.createVirtualList(
+                    container,
+                    this.ordersData,
+                    (order) => {
+                        const div = document.createElement('div');
+                        div.className = 'border-b p-4 hover:bg-gray-50';
+                        div.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">Order #${order._id.slice(-8)}</div>
+                                    <div class="text-sm text-gray-500">${new Date(order.createdAt).toLocaleDateString()}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-medium">₹${order.totalAmount?.toLocaleString()}</div>
+                                    <div class="text-sm text-gray-500">${order.status}</div>
+                                </div>
+                            </div>
+                        `;
+                        return div;
+                    },
+                    80 // Item height
+                );
+            }
+
+            async loadReviews() {
+                try {
+                    const result = await optimizedUtils.makeRequest('/reviews/vendor/my-reviews', {}, 'vendor_reviews');
+                    if (result.success) {
+                        this.renderReviews(result.data.reviews);
+                    }
+                } catch (error) {
+                    console.error('Load reviews error:', error);
+                }
+            }
+
+            renderReviews(reviews) {
+                const container = document.getElementById('reviewsContainer');
+                if (!container) return;
+
+                if (reviews.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No reviews yet</p>';
+                    return;
+                }
+
+                const reviewsHTML = reviews.map(review => `
+                    <div class="border-b p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-medium">${review.userId.name}</div>
+                                <div class="text-sm text-gray-500">${review.productId.name}</div>
+                            </div>
+                            <div class="flex">
+                                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                            </div>
+                        </div>
+                        ${review.comment ? `<p class="text-gray-700">${review.comment}</p>` : ''}
+                        <div class="text-xs text-gray-400 mt-2">${new Date(review.createdAt).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+
+                container.innerHTML = reviewsHTML;
+            }
+
+            async loadAnalytics() {
+                try {
+                    const result = await optimizedUtils.makeRequest('/payments/vendor/earnings', {}, 'vendor_analytics');
+                    if (result.success) {
+                        this.renderAnalytics(result.data);
+                    }
+                } catch (error) {
+                    console.error('Load analytics error:', error);
+                }
+            }
+
+            renderAnalytics(data) {
+                const container = document.getElementById('analyticsContainer');
+                if (!container) return;
+
+                // Handle actual API response structure
+                const totalSales = data.totalEarnings || 0;
+                const netEarnings = data.totalNetAmount || 0;
+                const commission = data.totalCommission || 0;
+                const earningsHistory = data.earningsHistory || [];
+
+                // Group earnings by month
+                const monthlyBreakdown = {};
+                earningsHistory.forEach(earning => {
+                    const date = new Date(earning.date);
+                    const monthKey = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+                    if (!monthlyBreakdown[monthKey]) {
+                        monthlyBreakdown[monthKey] = 0;
+                    }
+                    monthlyBreakdown[monthKey] += earning.netAmount;
+                });
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h4 class="font-medium text-blue-900">Total Sales</h4>
+                            <p class="text-2xl font-bold text-blue-600">₹${totalSales.toLocaleString()}</p>
+                            <p class="text-sm text-gray-600 mt-1">Gross revenue</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h4 class="font-medium text-green-900">Net Earnings</h4>
+                            <p class="text-2xl font-bold text-green-600">₹${netEarnings.toLocaleString()}</p>
+                            <p class="text-sm text-gray-600 mt-1">After ${data.commissionRate || 1}% commission</p>
+                        </div>
+                        <div class="bg-purple-50 p-6 rounded-lg">
+                            <h4 class="font-medium text-purple-900">Commission Paid</h4>
+                            <p class="text-2xl font-bold text-purple-600">₹${commission.toLocaleString()}</p>
+                            <p class="text-sm text-gray-600 mt-1">Platform fee</p>
+                        </div>
+                    </div>
+                    
+                    ${Object.keys(monthlyBreakdown).length > 0 ? `
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <h4 class="font-medium mb-4">Monthly Breakdown</h4>
+                            <div class="space-y-2">
+                                ${Object.entries(monthlyBreakdown).map(([month, amount]) => `
+                                    <div class="flex justify-between items-center py-2 border-b">
+                                        <span class="text-gray-700">${month}</span>
+                                        <span class="font-medium text-green-600">₹${amount.toLocaleString()}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : '<p class="text-gray-500 text-center py-8">No earnings data available yet</p>'}
+                    
+                    ${earningsHistory.length > 0 ? `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="font-medium mb-4">Recent Transactions</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Date</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Order ID</th>
+                                            <th class="px-4 py-2 text-right text-sm font-medium text-gray-700">Amount</th>
+                                            <th class="px-4 py-2 text-right text-sm font-medium text-gray-700">Commission</th>
+                                            <th class="px-4 py-2 text-right text-sm font-medium text-gray-700">Net</th>
+                                            <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${earningsHistory.slice(0, 10).map(earning => `
+                                            <tr class="border-t hover:bg-gray-50">
+                                                <td class="px-4 py-2 text-sm">${new Date(earning.date).toLocaleDateString()}</td>
+                                                <td class="px-4 py-2 text-sm font-mono">#${earning.orderId.toString().slice(-8)}</td>
+                                                <td class="px-4 py-2 text-sm text-right">₹${earning.amount.toLocaleString()}</td>
+                                                <td class="px-4 py-2 text-sm text-right text-red-600">-₹${earning.commission.toLocaleString()}</td>
+                                                <td class="px-4 py-2 text-sm text-right font-medium text-green-600">₹${earning.netAmount.toLocaleString()}</td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <span class="px-2 py-1 text-xs rounded ${earning.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                                        ${earning.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+            }
+
+            filterProducts(searchTerm) {
+                // Client-side filtering for better performance
+                const filtered = this.productsData.filter(product => 
+                    product.productId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product.productId?.category?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                
+                // Re-render with filtered data
+                const tbody = document.getElementById('productsTableBody');
+                if (tbody) {
+                    // Use the same rendering logic but with filtered data
+                    const originalData = this.productsData;
+                    this.productsData = filtered;
+                    this.renderProductsTable();
+                    this.productsData = originalData; // Restore original data
+                }
+            }
+
+            showMessage(text, type) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+                messageDiv.textContent = text;
+                messageDiv.classList.remove('hidden');
+
+                setTimeout(() => {
+                    messageDiv.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard
+        const dashboard = new OptimizedVendorDashboard();
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Add Product Modal Functions
+        function showAddProductModal() {
+            document.getElementById('addProductModal').classList.remove('hidden');
+            setupProductSearch();
+            setupProductMethodToggle();
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.add('hidden');
+            document.getElementById('addProductForm').reset();
+            clearProductSelection();
+        }
+
+        function setupProductMethodToggle() {
+            const radios = document.querySelectorAll('input[name="productMethod"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const existingSection = document.getElementById('existingProductSection');
+                    const newSection = document.getElementById('newProductSection');
+                    
+                    if (e.target.value === 'existing') {
+                        existingSection.classList.remove('hidden');
+                        newSection.classList.add('hidden');
+                        // Clear new product fields
+                        document.getElementById('newProductName').value = '';
+                        document.getElementById('newProductCategory').value = '';
+                        document.getElementById('newProductDescription').value = '';
+                    } else {
+                        existingSection.classList.add('hidden');
+                        newSection.classList.remove('hidden');
+                        // Clear existing product selection
+                        clearProductSelection();
+                    }
+                });
+            });
+        }
+
+        function setupProductSearch() {
+            const searchInput = document.getElementById('productSearchInput');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    document.getElementById('productSearchResults').classList.add('hidden');
+                    return;
+                }
+
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`/products/search/master?q=${encodeURIComponent(query)}`);
+                        const products = await response.json();
+
+                        const resultsDiv = document.getElementById('productSearchResults');
+                        if (products.length === 0) {
+                            resultsDiv.innerHTML = '<p class="p-3 text-gray-500">No products found</p>';
+                        } else {
+                            resultsDiv.innerHTML = products.map(product => `
+                                <div class="p-3 hover:bg-gray-50 cursor-pointer border-b" onclick="selectProduct('${product._id}', '${product.name.replace(/'/g, "\\'")}', '${product.category}')">
+                                    <div class="font-medium">${product.name}</div>
+                                    <div class="text-sm text-gray-500">${product.category}</div>
+                                </div>
+                            `).join('');
+                        }
+                        resultsDiv.classList.remove('hidden');
+                    } catch (error) {
+                        console.error('Product search error:', error);
+                    }
+                }, 300);
+            });
+        }
+
+        function selectProduct(productId, productName, category) {
+            document.getElementById('selectedProductId').value = productId;
+            document.getElementById('selectedProductName').textContent = `${productName} (${category})`;
+            document.getElementById('selectedProductDisplay').classList.remove('hidden');
+            document.getElementById('productSearchResults').classList.add('hidden');
+            document.getElementById('productSearchInput').value = '';
+        }
+
+        function clearProductSelection() {
+            document.getElementById('selectedProductId').value = '';
+            document.getElementById('selectedProductDisplay').classList.add('hidden');
+            document.getElementById('productSearchInput').value = '';
+        }
+
+        // Handle Add Product Form Submission
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitProductBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adding...';
+
+            try {
+                const formData = new FormData();
+                const productMethod = document.querySelector('input[name="productMethod"]:checked').value;
+
+                // Add common fields
+                formData.append('price', document.getElementById('productPrice').value);
+                formData.append('stock', document.getElementById('productStock').value);
+                formData.append('companyName', document.getElementById('companyName').value);
+
+                // Add product-specific fields
+                if (productMethod === 'existing') {
+                    const productId = document.getElementById('selectedProductId').value;
+                    if (!productId) {
+                        dashboard.showMessage('Please select a product', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Add Product';
+                        return;
+                    }
+                    formData.append('productId', productId);
+                } else {
+                    const productName = document.getElementById('newProductName').value;
+                    const category = document.getElementById('newProductCategory').value;
+                    
+                    if (!productName || !category) {
+                        dashboard.showMessage('Please fill in product name and category', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Add Product';
+                        return;
+                    }
+                    
+                    formData.append('productName', productName);
+                    formData.append('category', category);
+                    formData.append('description', document.getElementById('newProductDescription').value);
+                }
+
+                // Add images
+                const images = document.getElementById('productImages').files;
+                for (let i = 0; i < images.length; i++) {
+                    formData.append('images', images[i]);
+                }
+
+                // Submit form
+                const response = await fetch('/vendors/products', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    dashboard.showMessage('Product added successfully!', 'success');
+                    closeAddProductModal();
+                    // Reload products if on products tab
+                    if (dashboard.currentTab === 'products') {
+                        await dashboard.loadProducts();
+                    }
+                } else {
+                    dashboard.showMessage(result.error || 'Failed to add product', 'error');
+                }
+            } catch (error) {
+                console.error('Add product error:', error);
+                dashboard.showMessage('Failed to add product. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add Product';
+            }
+        });
+
+        // Edit Product Function
+        dashboard.editProduct = async function(productId) {
+            // TODO: Implement edit modal
+            console.log('Edit product:', productId);
+            dashboard.showMessage('Edit functionality coming soon!', 'info');
+        };
+
+        // Delete Product Function
+        dashboard.deleteProduct = async function(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/vendors/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    dashboard.showMessage('Product deleted successfully!', 'success');
+                    await dashboard.loadProducts();
+                } else {
+                    const result = await response.json();
+                    dashboard.showMessage(result.error || 'Failed to delete product', 'error');
+                }
+            } catch (error) {
+                console.error('Delete product error:', error);
+                dashboard.showMessage('Failed to delete product. Please try again.', 'error');
+            }
+        };
+
+        // Make switchTab globally accessible
+        window.switchTab = function(tabName) {
+            dashboard.switchTab(tabName);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riztoo - Server Status</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Server Status & Performance</h1>
+            
+            <!-- Quick Status -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Quick Status</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div id="server-status" class="text-3xl font-bold text-green-600">●</div>
+                        <div class="text-sm text-gray-600">Server Status</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="response-time" class="text-2xl font-bold text-blue-600">-</div>
+                        <div class="text-sm text-gray-600">Response Time</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="memory-usage" class="text-2xl font-bold text-purple-600">-</div>
+                        <div class="text-sm text-gray-600">Memory Usage</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Recommendations -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Performance Recommendations</h2>
+                <div id="recommendations" class="space-y-3">
+                    <!-- Recommendations will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Monitoring Controls -->
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Monitoring Settings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Current Load Level</h3>
+                        <div id="load-level" class="text-lg font-semibold text-green-600">Low</div>
+                        <div class="text-sm text-gray-500">Based on request frequency and response times</div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Recommended Monitoring Frequency</h3>
+                        <div id="recommended-frequency" class="text-lg font-semibold text-blue-600">30 seconds</div>
+                        <div class="text-sm text-gray-500">Optimal balance between monitoring and performance</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Quick Actions</h2>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/monitoring.html" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Full Monitoring Dashboard
+                    </a>
+                    <button id="test-performance" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                        Test Performance
+                    </button>
+                    <button id="clear-cache" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                        Clear Cache
+                    </button>
+                    <a href="/health/detailed" target="_blank" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                        Detailed Health Check
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMetrics = null;
+        
+        async function checkStatus() {
+            try {
+                const startTime = performance.now();
+                const response = await fetch('/health');
+                const endTime = performance.now();
+                const responseTime = endTime - startTime;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentMetrics = data;
+                    
+                    // Update status indicators
+                    document.getElementById('server-status').textContent = '●';
+                    document.getElementById('server-status').className = 'text-3xl font-bold text-green-600';
+                    document.getElementById('response-time').textContent = `${responseTime.toFixed(0)}ms`;
+                    document.getElementById('memory-usage').textContent = data.memory.heapUsed;
+                    
+                    // Update recommendations
+                    updateRecommendations(responseTime, data);
+                    
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                document.getElementById('server-status').textContent = '●';
+                document.getElementById('server-status').className = 'text-3xl font-bold text-red-600';
+                document.getElementById('response-time').textContent = 'Error';
+                document.getElementById('memory-usage').textContent = 'Error';
+                
+                updateRecommendations(null, null, error);
+            }
+        }
+        
+        function updateRecommendations(responseTime, metrics, error) {
+            const recommendationsDiv = document.getElementById('recommendations');
+            const loadLevelDiv = document.getElementById('load-level');
+            const frequencyDiv = document.getElementById('recommended-frequency');
+            
+            let recommendations = [];
+            let loadLevel = 'Unknown';
+            let recommendedFrequency = '30 seconds';
+            
+            if (error) {
+                loadLevel = 'Error';
+                recommendedFrequency = '60 seconds';
+                recommendations.push({
+                    type: 'error',
+                    text: `Server connection failed: ${error.message}. Check if the server is running.`
+                });
+            } else if (responseTime && metrics) {
+                // Determine load level
+                if (responseTime < 50) {
+                    loadLevel = 'Low';
+                    recommendedFrequency = '10 seconds';
+                } else if (responseTime < 200) {
+                    loadLevel = 'Medium';
+                    recommendedFrequency = '30 seconds';
+                } else if (responseTime < 500) {
+                    loadLevel = 'High';
+                    recommendedFrequency = '60 seconds';
+                } else {
+                    loadLevel = 'Very High';
+                    recommendedFrequency = '5 minutes';
+                }
+                
+                // Generate recommendations
+                if (responseTime > 200) {
+                    recommendations.push({
+                        type: 'warning',
+                        text: `Response time is ${responseTime.toFixed(0)}ms. Consider reducing monitoring frequency or optimizing server performance.`
+                    });
+                }
+                
+                if (responseTime < 50) {
+                    recommendations.push({
+                        type: 'success',
+                        text: 'Server is performing well. You can use more frequent monitoring if needed.'
+                    });
+                }
+                
+                const memoryMB = parseInt(metrics.memory.heapUsed);
+                if (memoryMB > 500) {
+                    recommendations.push({
+                        type: 'warning',
+                        text: `Memory usage is ${memoryMB}MB. Monitor for memory leaks and consider restarting if it continues to grow.`
+                    });
+                }
+                
+                if (metrics.uptime > 86400) { // 1 day
+                    const days = Math.floor(metrics.uptime / 86400);
+                    recommendations.push({
+                        type: 'info',
+                        text: `Server has been running for ${days} day(s). Consider periodic restarts for optimal performance.`
+                    });
+                }
+            }
+            
+            // Update load level and frequency
+            loadLevelDiv.textContent = loadLevel;
+            loadLevelDiv.className = `text-lg font-semibold ${
+                loadLevel === 'Low' ? 'text-green-600' :
+                loadLevel === 'Medium' ? 'text-yellow-600' :
+                loadLevel === 'High' ? 'text-orange-600' :
+                'text-red-600'
+            }`;
+            
+            frequencyDiv.textContent = recommendedFrequency;
+            
+            // Update recommendations
+            recommendationsDiv.innerHTML = '';
+            if (recommendations.length === 0) {
+                recommendations.push({
+                    type: 'success',
+                    text: 'All systems are operating normally.'
+                });
+            }
+            
+            recommendations.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded ${
+                    rec.type === 'success' ? 'bg-green-100 text-green-800' :
+                    rec.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                    rec.type === 'error' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                }`;
+                div.textContent = rec.text;
+                recommendationsDiv.appendChild(div);
+            });
+        }
+        
+        // Performance test
+        document.getElementById('test-performance').addEventListener('click', async () => {
+            const button = document.getElementById('test-performance');
+            button.textContent = 'Testing...';
+            button.disabled = true;
+            
+            try {
+                const tests = [];
+                for (let i = 0; i < 10; i++) {
+                    const start = performance.now();
+                    await fetch('/health');
+                    const end = performance.now();
+                    tests.push(end - start);
+                }
+                
+                const avg = tests.reduce((a, b) => a + b, 0) / tests.length;
+                const min = Math.min(...tests);
+                const max = Math.max(...tests);
+                
+                alert(`Performance Test Results:\nAverage: ${avg.toFixed(2)}ms\nMin: ${min.toFixed(2)}ms\nMax: ${max.toFixed(2)}ms`);
+            } catch (error) {
+                alert(`Performance test failed: ${error.message}`);
+            } finally {
+                button.textContent = 'Test Performance';
+                button.disabled = false;
+            }
+        });
+        
+        // Clear cache (placeholder - would need server endpoint)
+        document.getElementById('clear-cache').addEventListener('click', () => {
+            alert('Cache clearing would require a server endpoint. This is a placeholder for future implementation.');
+        });
+        
+        // Initial check
+        checkStatus();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

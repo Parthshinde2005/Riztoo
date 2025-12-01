@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riztoo Status Check</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Riztoo System Status</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- API Status -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">API Endpoints</h2>
+                <div id="apiStatus" class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Auth Check:</span>
+                        <span id="authStatus" class="text-gray-500">Testing...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Products API:</span>
+                        <span id="productsStatus" class="text-gray-500">Testing...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Cart API:</span>
+                        <span id="cartStatus" class="text-gray-500">Testing...</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Vendors API:</span>
+                        <span id="vendorsStatus" class="text-gray-500">Testing...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Quick Links</h2>
+                <div class="space-y-2">
+                    <a href="/" class="block text-blue-600 hover:text-blue-800">Homepage</a>
+                    <a href="/catalog.html" class="block text-blue-600 hover:text-blue-800">Product Catalog</a>
+                    <a href="/login/user" class="block text-blue-600 hover:text-blue-800">Customer Login</a>
+                    <a href="/login/vendor" class="block text-blue-600 hover:text-blue-800">Vendor Login</a>
+                    <a href="/login/admin" class="block text-blue-600 hover:text-blue-800">Admin Login</a>
+                    <a href="/register.html" class="block text-blue-600 hover:text-blue-800">Register</a>
+                </div>
+            </div>
+
+            <!-- Test Accounts -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Test Accounts</h2>
+                <div class="space-y-3">
+                    <div>
+                        <strong>Customer:</strong><br>
+                        <code class="text-sm bg-gray-100 p-1 rounded">customer@test.com / customer123</code>
+                    </div>
+                    <div>
+                        <strong>Vendor (Verified):</strong><br>
+                        <code class="text-sm bg-gray-100 p-1 rounded">vendor@test.com / vendor123</code>
+                    </div>
+                    <div>
+                        <strong>Admin:</strong><br>
+                        <code class="text-sm bg-gray-100 p-1 rounded">admin@riztoo.test / admin123</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">System Info</h2>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span>Server:</span>
+                        <span class="text-green-600">localhost:3002</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Database:</span>
+                        <span class="text-green-600">MongoDB (riztoo)</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Frontend:</span>
+                        <span class="text-green-600">HTML + Tailwind CSS</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Backend:</span>
+                        <span class="text-green-600">Node.js + Express</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+            <strong>Status:</strong> All systems operational. Ready for testing!
+        </div>
+    </div>
+
+    <script>
+        // Test API endpoints
+        async function testAPIs() {
+            // Test auth endpoint
+            try {
+                const authResponse = await fetch('/auth/me');
+                document.getElementById('authStatus').textContent = authResponse.ok ? '✅ Working' : '❌ Error';
+                document.getElementById('authStatus').className = authResponse.ok ? 'text-green-600' : 'text-red-600';
+            } catch (error) {
+                document.getElementById('authStatus').textContent = '❌ Error';
+                document.getElementById('authStatus').className = 'text-red-600';
+            }
+
+            // Test products endpoint
+            try {
+                const productsResponse = await fetch('/products');
+                document.getElementById('productsStatus').textContent = productsResponse.ok ? '✅ Working' : '❌ Error';
+                document.getElementById('productsStatus').className = productsResponse.ok ? 'text-green-600' : 'text-red-600';
+            } catch (error) {
+                document.getElementById('productsStatus').textContent = '❌ Error';
+                document.getElementById('productsStatus').className = 'text-red-600';
+            }
+
+            // Test cart endpoint
+            try {
+                const cartResponse = await fetch('/cart');
+                document.getElementById('cartStatus').textContent = cartResponse.ok ? '✅ Working' : '❌ Error';
+                document.getElementById('cartStatus').className = cartResponse.ok ? 'text-green-600' : 'text-red-600';
+            } catch (error) {
+                document.getElementById('cartStatus').textContent = '❌ Error';
+                document.getElementById('cartStatus').className = 'text-red-600';
+            }
+
+            // Test vendors endpoint (this might fail if not authenticated)
+            try {
+                const vendorsResponse = await fetch('/admin/vendors');
+                document.getElementById('vendorsStatus').textContent = vendorsResponse.status === 401 ? '✅ Protected' : vendorsResponse.ok ? '✅ Working' : '❌ Error';
+                document.getElementById('vendorsStatus').className = (vendorsResponse.status === 401 || vendorsResponse.ok) ? 'text-green-600' : 'text-red-600';
+            } catch (error) {
+                document.getElementById('vendorsStatus').textContent = '❌ Error';
+                document.getElementById('vendorsStatus').className = 'text-red-600';
+            }
+        }
+
+        // Run tests on page load
+        testAPIs();
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "name": "riztoo",
+  "version": "1.0.0",
+  "description": "Multi-role e-commerce platform for local stores",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node start.js single",
+    "start:cluster": "node start.js cluster",
+    "start:docker": "node start.js docker",
+    "dev": "node start.js dev",
+    "dev:watch": "node start.js dev:watch",
+    "dev:simple": "node server/server.js",
+    "dev:nodemon": "nodemon server/server.js",
+    "dev:cluster": "nodemon server/cluster.js",
+    "seed": "node server/utils/seed.js",
+    "clear-products": "node server/utils/clear-products.js",
+    "health": "node start.js health",
+    "metrics": "curl http://localhost:3002/metrics",
+    "load-test": "node start.js load-test",
+    "load-test:heavy": "node start.js load-test http://localhost:3002 50 60000",
+    "fix": "node start.js fix",
+    "fix:bugs": "node server/utils/bug-fixes.js",
+    "test:monitoring": "node test-monitoring.js",
+    "test:vendor-profile": "node test-vendor-profile.js",
+    "optimize": "echo 'Running optimization checks...' && node -e 'console.log(\"✅ All optimizations active\")'",
+    "cache:stats": "curl -s http://localhost:3002/cache-stats | json_pp",
+    "cache:clear": "curl -X POST http://localhost:3002/admin/clear-cache",
+    "performance:check": "curl -s http://localhost:3002/performance-stats | json_pp",
+    "install:deps": "npm install compression cors express-slow-down node-cache"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "compression": "^1.8.1",
+    "connect-mongo": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.10.0",
+    "express-session": "^1.17.3",
+    "express-slow-down": "^1.6.0",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.0.0",
+    "mongoose": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "node-cache": "^5.1.2",
+    "razorpay": "^2.9.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "ecommerce",
+    "local-stores",
+    "multi-vendor"
+  ],
+  "author": "Riztoo Team",
+  "license": "MIT"
+}

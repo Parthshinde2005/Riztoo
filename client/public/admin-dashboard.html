@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                    <span class="ml-4 text-red-600 font-medium">Admin Dashboard</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userName" class="text-gray-700"></span>
+                    <span id="guestBadge" class="hidden bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Guest (Read-Only)</span>
+                    <button id="logoutBtn" class="text-red-600 hover:text-red-800">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p class="text-gray-600">Manage vendors, users, and platform operations</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-500">Total Users</h3>
+                <p id="totalUsers" class="text-2xl font-bold text-gray-900">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-500">Total Vendors</h3>
+                <p id="totalVendors" class="text-2xl font-bold text-gray-900">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-500">Unverified Vendors</h3>
+                <p id="unverifiedVendors" class="text-2xl font-bold text-yellow-600">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-500">Total Products</h3>
+                <p id="totalProducts" class="text-2xl font-bold text-gray-900">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-sm font-medium text-gray-500">Pending Reports</h3>
+                <p id="pendingReports" class="text-2xl font-bold text-red-600">0</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button id="vendorsTab" class="tab-btn active py-2 px-1 border-b-2 border-red-500 font-medium text-sm text-red-600">
+                        Vendor Management
+                    </button>
+                    <button id="reportsTab" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+                        Reports
+                    </button>
+                    <button id="usersTab" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700">
+                        Users
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Vendor Management Tab -->
+        <div id="vendorsContent" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">Vendor Management</h2>
+                        <div class="flex space-x-4">
+                            <select id="vendorFilter" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">All Vendors</option>
+                                <option value="false">Unverified</option>
+                                <option value="true">Verified</option>
+                            </select>
+                            <button id="refreshVendors" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm">
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="vendorsList" class="divide-y">
+                    <!-- Vendors will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reportsContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">User Reports</h2>
+                        <div class="flex space-x-4">
+                            <select id="reportFilter" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">All Reports</option>
+                                <option value="false">Pending</option>
+                                <option value="true">Handled</option>
+                            </select>
+                            <button id="refreshReports" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm">
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="reportsList" class="divide-y">
+                    <!-- Reports will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="usersContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">User Management</h2>
+                        <div class="flex space-x-4">
+                            <select id="userFilter" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">All Users</option>
+                                <option value="customer">Customers</option>
+                                <option value="vendor">Vendors</option>
+                                <option value="admin">Admins</option>
+                            </select>
+                            <button id="refreshUsers" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm">
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="usersList" class="divide-y">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Modal -->
+    <div id="actionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 id="modalTitle" class="text-xl font-bold text-gray-900"></h2>
+                        <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div id="modalContent" class="mb-6">
+                        <!-- Modal content will be loaded here -->
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button id="cancelAction" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button id="confirmAction" class="px-4 py-2 rounded-md text-white">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let currentUser = null;
+        let isGuest = false;
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    
+                    if (currentUser.role !== 'admin') {
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    document.getElementById('userName').textContent = currentUser.name;
+                    
+                    if (currentUser.isGuest) {
+                        isGuest = true;
+                        document.getElementById('guestBadge').classList.remove('hidden');
+                    }
+
+                    await loadDashboardStats();
+                    await loadVendors();
+                } else {
+                    window.location.href = '/login/admin';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login/admin';
+            }
+        }
+
+        // Load dashboard stats
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/admin/dashboard');
+                if (response.ok) {
+                    const stats = await response.json();
+                    
+                    document.getElementById('totalUsers').textContent = stats.totalUsers;
+                    document.getElementById('totalVendors').textContent = stats.totalVendors;
+                    document.getElementById('unverifiedVendors').textContent = stats.unverifiedVendors;
+                    document.getElementById('totalProducts').textContent = stats.totalProducts;
+                    document.getElementById('pendingReports').textContent = stats.pendingReports;
+                }
+            } catch (error) {
+                console.error('Load stats error:', error);
+            }
+        }
+
+        // Load vendors
+        async function loadVendors() {
+            try {
+                const verified = document.getElementById('vendorFilter').value;
+                const params = verified ? `?verified=${verified}` : '';
+                
+                const response = await fetch(`/admin/vendors${params}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayVendors(data.vendors);
+                }
+            } catch (error) {
+                console.error('Load vendors error:', error);
+            }
+        }
+
+        // Display vendors
+        function displayVendors(vendors) {
+            const container = document.getElementById('vendorsList');
+            
+            if (vendors.length === 0) {
+                container.innerHTML = '<p class="p-6 text-gray-500 text-center">No vendors found.</p>';
+                return;
+            }
+
+            container.innerHTML = vendors.map(vendor => `
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-semibold">${vendor.storeName}</h3>
+                                <span class="px-2 py-1 text-xs rounded ${vendor.verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${vendor.verified ? 'Verified' : 'Pending'}
+                                </span>
+                            </div>
+                            <p class="text-gray-600">${vendor.companyName || 'No company name'}</p>
+                            <p class="text-sm text-gray-500">Owner: ${vendor.userId.name} (${vendor.userId.email})</p>
+                            <p class="text-sm text-gray-500">Joined: ${new Date(vendor.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                            ${vendor.description ? `<p class="text-sm text-gray-600 mt-2">${vendor.description}</p>` : ''}
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            ${!vendor.verified ? `
+                                <button onclick="verifyVendor('${vendor._id}', '${vendor.storeName}')" 
+                                    class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 ${isGuest ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${isGuest ? 'disabled' : ''}>
+                                    Verify
+                                </button>
+                                <button onclick="rejectVendor('${vendor._id}', '${vendor.storeName}')" 
+                                    class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 ${isGuest ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${isGuest ? 'disabled' : ''}>
+                                    Reject
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteVendor('${vendor._id}', '${vendor.storeName}')" 
+                                class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 ${isGuest ? 'opacity-50 cursor-not-allowed' : ''}"
+                                ${isGuest ? 'disabled' : ''}>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load reports
+        async function loadReports() {
+            try {
+                const handled = document.getElementById('reportFilter').value;
+                const params = handled ? `?handled=${handled}` : '';
+                
+                const response = await fetch(`/admin/reports${params}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayReports(data.reports);
+                }
+            } catch (error) {
+                console.error('Load reports error:', error);
+            }
+        }
+
+        // Display reports
+        function displayReports(reports) {
+            const container = document.getElementById('reportsList');
+            
+            if (reports.length === 0) {
+                container.innerHTML = '<p class="p-6 text-gray-500 text-center">No reports found.</p>';
+                return;
+            }
+
+            container.innerHTML = reports.map(report => `
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-semibold">Report #${report._id.slice(-8)}</h3>
+                                <span class="px-2 py-1 text-xs rounded ${report.handled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${report.handled ? 'Handled' : 'Pending'}
+                                </span>
+                            </div>
+                            <p class="text-gray-600"><strong>Reporter:</strong> ${report.reporterUserId.name} (${report.reporterUserId.email})</p>
+                            <p class="text-gray-600"><strong>Vendor:</strong> ${report.vendorId.storeName}</p>
+                            <p class="text-gray-600"><strong>Reason:</strong> ${report.reason}</p>
+                            ${report.details ? `<p class="text-gray-600"><strong>Details:</strong> ${report.details}</p>` : ''}
+                            <p class="text-sm text-gray-500">Reported: ${new Date(report.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                            ${report.actionTaken ? `<p class="text-sm text-green-600 mt-2"><strong>Action Taken:</strong> ${report.actionTaken}</p>` : ''}
+                        </div>
+                        
+                        ${!report.handled ? `
+                            <div class="flex space-x-2">
+                                <button onclick="handleReport('${report._id}')" 
+                                    class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 ${isGuest ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${isGuest ? 'disabled' : ''}>
+                                    Take Action
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const role = document.getElementById('userFilter').value;
+                const params = role ? `?role=${role}` : '';
+                
+                const response = await fetch(`/admin/users${params}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayUsers(data.users);
+                }
+            } catch (error) {
+                console.error('Load users error:', error);
+            }
+        }
+
+        // Display users
+        function displayUsers(users) {
+            const container = document.getElementById('usersList');
+            
+            if (users.length === 0) {
+                container.innerHTML = '<p class="p-6 text-gray-500 text-center">No users found.</p>';
+                return;
+            }
+
+            container.innerHTML = users.map(user => `
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-semibold">${user.name}</h3>
+                                <span class="px-2 py-1 text-xs rounded ${
+                                    user.role === 'admin' ? 'bg-red-100 text-red-800' :
+                                    user.role === 'vendor' ? 'bg-green-100 text-green-800' :
+                                    'bg-blue-100 text-blue-800'
+                                }">
+                                    ${user.role}
+                                </span>
+                                ${user.isGuest ? '<span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">Guest</span>' : ''}
+                            </div>
+                            <p class="text-gray-600">${user.email}</p>
+                            <p class="text-sm text-gray-500">Joined: ${new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            ${user.role !== 'admin' ? `
+                                <button onclick="deleteUser('${user._id}', '${user.name}')" 
+                                    class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 ${isGuest ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${isGuest ? 'disabled' : ''}>
+                                    Delete
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-red-500', 'text-red-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show selected content and activate tab
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            const activeTab = document.getElementById(tabName + 'Tab');
+            activeTab.classList.add('active', 'border-red-500', 'text-red-600');
+            activeTab.classList.remove('border-transparent', 'text-gray-500');
+
+            // Load data for the active tab
+            if (tabName === 'vendors') {
+                loadVendors();
+            } else if (tabName === 'reports') {
+                loadReports();
+            } else if (tabName === 'users') {
+                loadUsers();
+            }
+        }
+
+        // Verify vendor
+        async function verifyVendor(vendorId, storeName) {
+            if (isGuest) {
+                showMessage('Guest admin cannot perform actions', 'error');
+                return;
+            }
+
+            showActionModal(
+                'Verify Vendor',
+                `Are you sure you want to verify "${storeName}"? This will allow them to add and sell products.`,
+                'bg-green-600 hover:bg-green-700',
+                async () => {
+                    try {
+                        const response = await fetch(`/admin/vendors/${vendorId}/verify`, {
+                            method: 'POST'
+                        });
+
+                        if (response.ok) {
+                            showMessage('Vendor verified successfully', 'success');
+                            loadVendors();
+                            loadDashboardStats();
+                        } else {
+                            const result = await response.json();
+                            showMessage(result.error || 'Failed to verify vendor', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Verify vendor error:', error);
+                        showMessage('Failed to verify vendor', 'error');
+                    }
+                }
+            );
+        }
+
+        // Reject vendor
+        async function rejectVendor(vendorId, storeName) {
+            if (isGuest) {
+                showMessage('Guest admin cannot perform actions', 'error');
+                return;
+            }
+
+            showActionModal(
+                'Reject Vendor',
+                `Are you sure you want to reject "${storeName}"? This will delete their account and all associated data.`,
+                'bg-red-600 hover:bg-red-700',
+                async () => {
+                    try {
+                        const response = await fetch(`/admin/vendors/${vendorId}/reject`, {
+                            method: 'POST'
+                        });
+
+                        if (response.ok) {
+                            showMessage('Vendor rejected and deleted', 'success');
+                            loadVendors();
+                            loadDashboardStats();
+                        } else {
+                            const result = await response.json();
+                            showMessage(result.error || 'Failed to reject vendor', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Reject vendor error:', error);
+                        showMessage('Failed to reject vendor', 'error');
+                    }
+                }
+            );
+        }
+
+        // Delete vendor
+        async function deleteVendor(vendorId, storeName) {
+            if (isGuest) {
+                showMessage('Guest admin cannot perform actions', 'error');
+                return;
+            }
+
+            showActionModal(
+                'Delete Vendor',
+                `Are you sure you want to delete "${storeName}"? This action cannot be undone.`,
+                'bg-red-600 hover:bg-red-700',
+                async () => {
+                    try {
+                        const response = await fetch(`/admin/vendors/${vendorId}?deleteProducts=true`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok) {
+                            showMessage('Vendor deleted successfully', 'success');
+                            loadVendors();
+                            loadDashboardStats();
+                        } else {
+                            const result = await response.json();
+                            showMessage(result.error || 'Failed to delete vendor', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Delete vendor error:', error);
+                        showMessage('Failed to delete vendor', 'error');
+                    }
+                }
+            );
+        }
+
+        // Handle report
+        function handleReport(reportId) {
+            if (isGuest) {
+                showMessage('Guest admin cannot perform actions', 'error');
+                return;
+            }
+
+            const actionInput = document.createElement('textarea');
+            actionInput.className = 'w-full px-3 py-2 border border-gray-300 rounded-md';
+            actionInput.placeholder = 'Describe the action taken...';
+            actionInput.rows = 3;
+
+            document.getElementById('modalTitle').textContent = 'Handle Report';
+            document.getElementById('modalContent').innerHTML = `
+                <p class="mb-4">Please describe the action taken for this report:</p>
+            `;
+            document.getElementById('modalContent').appendChild(actionInput);
+
+            const confirmBtn = document.getElementById('confirmAction');
+            confirmBtn.className = 'px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700';
+            confirmBtn.textContent = 'Submit Action';
+
+            confirmBtn.onclick = async () => {
+                const actionTaken = actionInput.value.trim();
+                if (!actionTaken) {
+                    showMessage('Please describe the action taken', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/admin/reports/${reportId}/action`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ actionTaken })
+                    });
+
+                    if (response.ok) {
+                        showMessage('Report action recorded successfully', 'success');
+                        document.getElementById('actionModal').classList.add('hidden');
+                        loadReports();
+                        loadDashboardStats();
+                    } else {
+                        const result = await response.json();
+                        showMessage(result.error || 'Failed to record action', 'error');
+                    }
+                } catch (error) {
+                    console.error('Handle report error:', error);
+                    showMessage('Failed to record action', 'error');
+                }
+            };
+
+            document.getElementById('actionModal').classList.remove('hidden');
+        }
+
+        // Delete user
+        async function deleteUser(userId, userName) {
+            if (isGuest) {
+                showMessage('Guest admin cannot perform actions', 'error');
+                return;
+            }
+
+            showActionModal(
+                'Delete User',
+                `Are you sure you want to delete user "${userName}"? This action cannot be undone.`,
+                'bg-red-600 hover:bg-red-700',
+                async () => {
+                    try {
+                        const response = await fetch(`/admin/users/${userId}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok) {
+                            showMessage('User deleted successfully', 'success');
+                            loadUsers();
+                            loadDashboardStats();
+                        } else {
+                            const result = await response.json();
+                            showMessage(result.error || 'Failed to delete user', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Delete user error:', error);
+                        showMessage('Failed to delete user', 'error');
+                    }
+                }
+            );
+        }
+
+        // Show action modal
+        function showActionModal(title, content, buttonClass, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = `<p>${content}</p>`;
+            
+            const confirmBtn = document.getElementById('confirmAction');
+            confirmBtn.className = `px-4 py-2 rounded-md text-white ${buttonClass}`;
+            confirmBtn.textContent = 'Confirm';
+            confirmBtn.onclick = () => {
+                document.getElementById('actionModal').classList.add('hidden');
+                onConfirm();
+            };
+
+            document.getElementById('actionModal').classList.remove('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('vendorsTab').addEventListener('click', () => switchTab('vendors'));
+        document.getElementById('reportsTab').addEventListener('click', () => switchTab('reports'));
+        document.getElementById('usersTab').addEventListener('click', () => switchTab('users'));
+
+        document.getElementById('vendorFilter').addEventListener('change', loadVendors);
+        document.getElementById('reportFilter').addEventListener('change', loadReports);
+        document.getElementById('userFilter').addEventListener('change', loadUsers);
+
+        document.getElementById('refreshVendors').addEventListener('click', loadVendors);
+        document.getElementById('refreshReports').addEventListener('click', loadReports);
+        document.getElementById('refreshUsers').addEventListener('click', loadUsers);
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('actionModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelAction').addEventListener('click', () => {
+            document.getElementById('actionModal').classList.add('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

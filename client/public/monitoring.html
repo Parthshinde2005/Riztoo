@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riztoo - Server Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Server Monitoring Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <label class="text-sm text-gray-600">Refresh Rate:</label>
+                <select id="refreshRate" class="px-3 py-1 border rounded">
+                    <option value="10000">10 seconds</option>
+                    <option value="30000" selected>30 seconds</option>
+                    <option value="60000">1 minute</option>
+                    <option value="300000">5 minutes</option>
+                    <option value="0">Manual only</option>
+                </select>
+                <button id="refreshNow" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Refresh Now
+                </button>
+                <div id="connectionStatus" class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-sm text-gray-600">Connected</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Server Status</h3>
+                <div id="server-status" class="text-2xl font-bold text-green-600">Checking...</div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Requests</h3>
+                <div id="total-requests" class="text-2xl font-bold text-blue-600">-</div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Avg Response Time</h3>
+                <div id="avg-response-time" class="text-2xl font-bold text-purple-600">-</div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Memory Usage</h3>
+                <div id="memory-usage" class="text-2xl font-bold text-orange-600">-</div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Response Time Trend</h3>
+                <canvas id="responseTimeChart" width="400" height="200"></canvas>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Memory Usage</h3>
+                <canvas id="memoryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <!-- Response Status Distribution -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Response Status Distribution</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600" id="status-2xx">0</div>
+                    <div class="text-sm text-gray-600">2xx Success</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600" id="status-3xx">0</div>
+                    <div class="text-sm text-gray-600">3xx Redirect</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600" id="status-4xx">0</div>
+                    <div class="text-sm text-gray-600">4xx Client Error</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600" id="status-5xx">0</div>
+                    <div class="text-sm text-gray-600">5xx Server Error</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Server Info -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Server Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <strong>Process ID:</strong> <span id="process-id">-</span>
+                </div>
+                <div>
+                    <strong>Uptime:</strong> <span id="uptime">-</span>
+                </div>
+                <div>
+                    <strong>Database Status:</strong> <span id="db-status">-</span>
+                </div>
+                <div>
+                    <strong>Last Updated:</strong> <span id="last-updated">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart configurations
+        const responseTimeChart = new Chart(document.getElementById('responseTimeChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Response Time (ms)',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const memoryChart = new Chart(document.getElementById('memoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Heap Used', 'Heap Free'],
+                datasets: [{
+                    data: [0, 0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Data storage
+        let responseTimeData = [];
+        let timeLabels = [];
+        let updateInterval = null;
+        let isUpdating = false;
+
+        // Fetch and update metrics
+        async function updateMetrics() {
+            if (isUpdating) return; // Prevent concurrent updates
+            isUpdating = true;
+            
+            const statusIndicator = document.getElementById('connectionStatus');
+            const statusDot = statusIndicator.querySelector('div');
+            const statusText = statusIndicator.querySelector('span');
+            
+            try {
+                // Update status to loading
+                statusDot.className = 'w-3 h-3 bg-yellow-500 rounded-full mr-2';
+                statusText.textContent = 'Updating...';
+                
+                // Use Promise.all to fetch both endpoints simultaneously but with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                
+                const [healthResponse, metricsResponse] = await Promise.all([
+                    fetch('/health', { signal: controller.signal }),
+                    fetch('/metrics', { signal: controller.signal })
+                ]);
+                
+                clearTimeout(timeoutId);
+                
+                if (!healthResponse.ok || !metricsResponse.ok) {
+                    throw new Error(`HTTP Error: ${healthResponse.status} / ${metricsResponse.status}`);
+                }
+                
+                const [healthData, metricsData] = await Promise.all([
+                    healthResponse.json(),
+                    metricsResponse.json()
+                ]);
+            try {
+                // Health check
+                const healthResponse = await fetch('/health');
+                const healthData = await healthResponse.json();
+                
+                // Metrics
+                const metricsResponse = await fetch('/metrics');
+                const metricsData = await metricsResponse.json();
+                
+                // Update status cards
+                document.getElementById('server-status').textContent = healthData.status === 'ok' ? 'Online' : 'Offline';
+                document.getElementById('server-status').className = healthData.status === 'ok' 
+                    ? 'text-2xl font-bold text-green-600' 
+                    : 'text-2xl font-bold text-red-600';
+                
+                document.getElementById('total-requests').textContent = metricsData.requests || 0;
+                document.getElementById('avg-response-time').textContent = 
+                    metricsData.averageResponseTime ? `${metricsData.averageResponseTime.toFixed(2)}ms` : '-';
+                document.getElementById('memory-usage').textContent = 
+                    metricsData.memory ? `${metricsData.memory.heapUsed}MB` : '-';
+                
+                // Update response status distribution
+                if (metricsData.responses) {
+                    document.getElementById('status-2xx').textContent = metricsData.responses['2xx'] || 0;
+                    document.getElementById('status-3xx').textContent = metricsData.responses['3xx'] || 0;
+                    document.getElementById('status-4xx').textContent = metricsData.responses['4xx'] || 0;
+                    document.getElementById('status-5xx').textContent = metricsData.responses['5xx'] || 0;
+                }
+                
+                // Update server info
+                document.getElementById('process-id').textContent = metricsData.pid || '-';
+                document.getElementById('uptime').textContent = 
+                    metricsData.uptime ? `${Math.floor(metricsData.uptime / 60)} minutes` : '-';
+                document.getElementById('db-status').textContent = 
+                    healthData.database?.status || 'Unknown';
+                document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+                
+                // Update charts
+                const now = new Date().toLocaleTimeString();
+                timeLabels.push(now);
+                responseTimeData.push(metricsData.averageResponseTime || 0);
+                
+                // Keep only last 20 data points
+                if (timeLabels.length > 20) {
+                    timeLabels.shift();
+                    responseTimeData.shift();
+                }
+                
+                responseTimeChart.data.labels = timeLabels;
+                responseTimeChart.data.datasets[0].data = responseTimeData;
+                responseTimeChart.update('none'); // Disable animation for better performance
+                
+                // Update memory chart
+                if (metricsData.memory) {
+                    const heapUsed = metricsData.memory.heapUsed;
+                    const heapTotal = metricsData.memory.heapTotal;
+                    const heapFree = heapTotal - heapUsed;
+                    
+                    memoryChart.data.datasets[0].data = [heapUsed, heapFree];
+                    memoryChart.update('none'); // Disable animation for better performance
+                }
+                
+                // Update status to connected
+                statusDot.className = 'w-3 h-3 bg-green-500 rounded-full mr-2';
+                statusText.textContent = 'Connected';
+                
+            } catch (error) {
+                console.error('Failed to fetch metrics:', error);
+                
+                // Update status to error
+                statusDot.className = 'w-3 h-3 bg-red-500 rounded-full mr-2';
+                statusText.textContent = 'Error';
+                
+                document.getElementById('server-status').textContent = 'Error';
+                document.getElementById('server-status').className = 'text-2xl font-bold text-red-600';
+                
+                // Show error details
+                if (error.name === 'AbortError') {
+                    statusText.textContent = 'Timeout';
+                } else if (error.message.includes('429')) {
+                    statusText.textContent = 'Rate Limited';
+                }
+            } finally {
+                isUpdating = false;
+            }
+        }
+
+        // Setup refresh rate control
+        function setupRefreshControl() {
+            const refreshRateSelect = document.getElementById('refreshRate');
+            const refreshNowButton = document.getElementById('refreshNow');
+            
+            function updateRefreshRate() {
+                const rate = parseInt(refreshRateSelect.value);
+                
+                // Clear existing interval
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+                
+                // Set new interval if not manual
+                if (rate > 0) {
+                    updateInterval = setInterval(updateMetrics, rate);
+                }
+            }
+            
+            refreshRateSelect.addEventListener('change', updateRefreshRate);
+            refreshNowButton.addEventListener('click', updateMetrics);
+            
+            // Initial setup
+            updateRefreshRate();
+        }
+
+        // Initialize dashboard
+        updateMetrics();
+        setupRefreshControl();
+    </script>
+</body>
+</html>

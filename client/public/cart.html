@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/cart.html" class="text-blue-600 font-medium">
+                        Cart (<span id="cartCount">0</span>)
+                    </a>
+                    <div id="userMenu" class="hidden">
+                        <a href="/profile.html" class="text-gray-700 hover:text-gray-900">Profile</a>
+                        <span id="userName" class="text-gray-700 ml-2"></span>
+                        <button id="logoutBtn" class="ml-2 text-red-600 hover:text-red-800">Logout</button>
+                    </div>
+                    <div id="loginMenu">
+                        <a href="/login/user" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+            <p class="text-gray-600">Review your items before checkout</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-gray-600">Loading cart...</p>
+        </div>
+
+        <!-- Cart Content -->
+        <div id="cartContent" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Cart Items -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="p-6 border-b">
+                            <h2 class="text-xl font-semibold">Cart Items</h2>
+                        </div>
+                        <div id="cartItems" class="divide-y">
+                            <!-- Cart items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
+                        <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Items (<span id="summaryItemCount">0</span>)</span>
+                                <span id="summarySubtotal">₹0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span class="text-green-600">Free</span>
+                            </div>
+                            <div class="border-t pt-3">
+                                <div class="flex justify-between font-semibold text-lg">
+                                    <span>Total</span>
+                                    <span id="summaryTotal">₹0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="checkoutBtn" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 font-medium">
+                            Proceed to Checkout
+                        </button>
+
+                        <div class="mt-4 text-center">
+                            <a href="/catalog.html" class="text-blue-600 hover:text-blue-800 text-sm">
+                                Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Cart -->
+        <div id="emptyCart" class="text-center py-12 hidden">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+            <p class="text-gray-600 mb-6">Start shopping to add items to your cart</p>
+            <a href="/catalog.html" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
+                Browse Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-md w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Checkout</h2>
+                        <button id="closeCheckoutModal" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+                            <p class="text-sm">This is a dummy payment system for demonstration purposes.</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Total Items:</span>
+                                <span id="checkoutItemCount">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total Amount:</span>
+                                <span id="checkoutTotal" class="font-semibold">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button id="cancelCheckout" class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button id="confirmCheckout" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            Confirm Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let cartData = null;
+
+        // Load cart
+        async function loadCart() {
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('cartContent').classList.add('hidden');
+                document.getElementById('emptyCart').classList.add('hidden');
+
+                const response = await fetch('/cart');
+                cartData = await response.json();
+
+                document.getElementById('loading').classList.add('hidden');
+
+                if (cartData.cart.length === 0) {
+                    document.getElementById('emptyCart').classList.remove('hidden');
+                } else {
+                    document.getElementById('cartContent').classList.remove('hidden');
+                    displayCartItems();
+                    updateSummary();
+                }
+
+                updateCartCount();
+            } catch (error) {
+                console.error('Load cart error:', error);
+                document.getElementById('loading').classList.add('hidden');
+                showMessage('Failed to load cart', 'error');
+            }
+        }
+
+        // Display cart items
+        function displayCartItems() {
+            const container = document.getElementById('cartItems');
+            
+            container.innerHTML = cartData.cart.map(item => `
+                <div class="p-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-medium text-gray-900">${item.productName}</h3>
+                            <p class="text-sm text-gray-600">From: ${item.storeName}</p>
+                            <p class="text-lg font-semibold text-green-600">₹${item.price.toLocaleString()}</p>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <button onclick="updateQuantity('${item.vendorProductId}', ${item.qty - 1})" 
+                                class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                </svg>
+                            </button>
+                            
+                            <span class="w-8 text-center font-medium">${item.qty}</span>
+                            
+                            <button onclick="updateQuantity('${item.vendorProductId}', ${item.qty + 1})" 
+                                class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="text-right">
+                            <p class="text-lg font-semibold">₹${(item.price * item.qty).toLocaleString()}</p>
+                            <button onclick="removeItem('${item.vendorProductId}')" 
+                                class="text-red-600 hover:text-red-800 text-sm">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update summary
+        function updateSummary() {
+            document.getElementById('summaryItemCount').textContent = cartData.itemCount;
+            document.getElementById('summarySubtotal').textContent = `₹${cartData.total.toLocaleString()}`;
+            document.getElementById('summaryTotal').textContent = `₹${cartData.total.toLocaleString()}`;
+        }
+
+        // Update cart count in navigation
+        function updateCartCount() {
+            document.getElementById('cartCount').textContent = cartData.itemCount || 0;
+        }
+
+        // Update quantity
+        async function updateQuantity(vendorProductId, newQty) {
+            try {
+                const response = await fetch('/cart/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vendorProductId, qty: newQty })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    loadCart(); // Reload cart
+                } else {
+                    showMessage(result.error || 'Failed to update quantity', 'error');
+                }
+            } catch (error) {
+                console.error('Update quantity error:', error);
+                showMessage('Failed to update quantity', 'error');
+            }
+        }
+
+        // Remove item
+        async function removeItem(vendorProductId) {
+            try {
+                const response = await fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vendorProductId })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Item removed from cart', 'success');
+                    loadCart(); // Reload cart
+                } else {
+                    showMessage(result.error || 'Failed to remove item', 'error');
+                }
+            } catch (error) {
+                console.error('Remove item error:', error);
+                showMessage('Failed to remove item', 'error');
+            }
+        }
+
+        // Checkout with Razorpay or Demo mode
+        async function checkout() {
+            try {
+                // Create order
+                const response = await fetch('/orders/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to create order');
+                }
+
+                // Check if it's demo mode
+                if (result.demoMode) {
+                    // Demo mode checkout
+                    showMessage('Demo mode: Simulating payment...', 'info');
+                    
+                    setTimeout(async () => {
+                        try {
+                            const demoResponse = await fetch('/orders/demo-checkout', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ orderId: result.orderId })
+                            });
+
+                            const demoResult = await demoResponse.json();
+
+                            if (demoResponse.ok) {
+                                showMessage('Demo payment successful! Order placed.', 'success');
+                                document.getElementById('checkoutModal').classList.add('hidden');
+                                
+                                setTimeout(() => {
+                                    window.location.href = '/profile.html';
+                                }, 2000);
+                            } else {
+                                throw new Error(demoResult.error || 'Demo payment failed');
+                            }
+                        } catch (error) {
+                            showMessage(error.message || 'Demo payment failed', 'error');
+                        }
+                    }, 2000);
+                    
+                    return;
+                }
+
+                // Real Razorpay checkout
+                if (typeof Razorpay === 'undefined') {
+                    throw new Error('Razorpay not loaded. Please refresh the page.');
+                }
+
+                const options = {
+                    key: result.key,
+                    amount: result.amount * 100, // Amount in paise
+                    currency: result.currency,
+                    name: 'Riztoo',
+                    description: 'Order Payment',
+                    order_id: result.razorpayOrderId,
+                    handler: async function (response) {
+                        await verifyPayment(response, result.orderId);
+                    },
+                    prefill: {
+                        name: document.getElementById('userName').textContent,
+                        email: '', // Will be filled from user data
+                    },
+                    theme: {
+                        color: '#10B981'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            showMessage('Payment cancelled', 'error');
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showMessage(error.message || 'Checkout failed', 'error');
+            }
+        }
+
+        // Verify payment
+        async function verifyPayment(paymentResponse, orderId) {
+            try {
+                const response = await fetch('/orders/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        razorpay_order_id: paymentResponse.razorpay_order_id,
+                        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                        razorpay_signature: paymentResponse.razorpay_signature,
+                        orderId: orderId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Payment successful! Order placed.', 'success');
+                    document.getElementById('checkoutModal').classList.add('hidden');
+                    
+                    // Refresh cart and redirect
+                    setTimeout(() => {
+                        window.location.href = '/profile.html';
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'Payment verification failed');
+                }
+            } catch (error) {
+                console.error('Payment verification error:', error);
+                showMessage(error.message || 'Payment verification failed', 'error');
+            }
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userName').textContent = data.user.name;
+                    document.getElementById('userMenu').classList.remove('hidden');
+                    document.getElementById('loginMenu').classList.add('hidden');
+                } else {
+                    document.getElementById('userMenu').classList.add('hidden');
+                    document.getElementById('loginMenu').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            if (cartData.cart.length === 0) {
+                showMessage('Cart is empty', 'error');
+                return;
+            }
+
+            document.getElementById('checkoutItemCount').textContent = cartData.itemCount;
+            document.getElementById('checkoutTotal').textContent = `₹${cartData.total.toLocaleString()}`;
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeCheckoutModal').addEventListener('click', () => {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelCheckout').addEventListener('click', () => {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        });
+
+        document.getElementById('confirmCheckout').addEventListener('click', checkout);
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+        loadCart();
+    </script>
+</body>
+</html>

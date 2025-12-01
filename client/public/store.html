@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - Riztoo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">Riztoo</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/catalog.html" class="text-gray-700 hover:text-gray-900">Products</a>
+                    <a href="/stores.html" class="text-gray-700 hover:text-gray-900">Stores</a>
+                    <a href="/cart.html" class="text-gray-700 hover:text-gray-900">
+                        Cart (<span id="cartCount">0</span>)
+                    </a>
+                    <div id="userMenu" class="hidden">
+                        <a href="/profile.html" class="text-gray-700 hover:text-gray-900">Profile</a>
+                        <span id="userName" class="text-gray-700 ml-2"></span>
+                        <button id="logoutBtn" class="ml-2 text-red-600 hover:text-red-800">Logout</button>
+                    </div>
+                    <div id="loginMenu">
+                        <a href="/login/user" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading -->
+        <div id="loading" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-gray-600">Loading store...</p>
+        </div>
+
+        <!-- Store Content -->
+        <div id="storeContent" class="hidden">
+            <!-- Store Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="md:w-1/3">
+                        <div id="storeImage" class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg">
+                            <!-- Store image will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h1 id="storeName" class="text-3xl font-bold text-gray-900 mb-2"></h1>
+                                <p id="companyName" class="text-lg text-gray-600 mb-2"></p>
+                            </div>
+                            <span id="verificationBadge" class="px-3 py-1 rounded text-sm"></span>
+                        </div>
+                        
+                        <p id="storeDescription" class="text-gray-700 mb-4"></p>
+                        
+                        <div id="storeLocation" class="flex items-center text-gray-600">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span id="locationText"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <h2 class="text-2xl font-semibold text-gray-900">Products</h2>
+                </div>
+                
+                <div id="productsGrid" class="p-6">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="text-center py-12 hidden">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Store not found</h3>
+            <p class="text-gray-600 mb-6">The store you're looking for doesn't exist or has been removed.</p>
+            <a href="/stores.html" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700">
+                Browse All Stores
+            </a>
+        </div>
+    </div>
+
+    <div id="message" class="fixed top-4 right-4 hidden z-50"></div>
+
+    <script>
+        let storeId = null;
+        let storeData = null;
+
+        // Get store ID from URL
+        function getStoreId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Load store data
+        async function loadStore() {
+            storeId = getStoreId();
+            
+            if (!storeId) {
+                showError();
+                return;
+            }
+
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                document.getElementById('storeContent').classList.add('hidden');
+                document.getElementById('errorState').classList.add('hidden');
+
+                const response = await fetch(`/vendors/${storeId}/products`);
+                
+                if (!response.ok) {
+                    showError();
+                    return;
+                }
+
+                const data = await response.json();
+                storeData = data;
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('storeContent').classList.remove('hidden');
+
+                displayStoreInfo();
+                displayProducts();
+            } catch (error) {
+                console.error('Load store error:', error);
+                showError();
+            }
+        }
+
+        // Display store information
+        function displayStoreInfo() {
+            const vendor = storeData.vendor;
+            
+            document.getElementById('storeName').textContent = vendor.storeName;
+            document.getElementById('companyName').textContent = vendor.companyName || '';
+            document.getElementById('storeDescription').textContent = vendor.description || 'No description available';
+            
+            // Verification badge
+            const badge = document.getElementById('verificationBadge');
+            if (vendor.verified) {
+                badge.textContent = 'Verified';
+                badge.className = 'px-3 py-1 rounded text-sm bg-green-100 text-green-800';
+            } else {
+                badge.textContent = 'Pending Verification';
+                badge.className = 'px-3 py-1 rounded text-sm bg-yellow-100 text-yellow-800';
+            }
+
+            // Location
+            const location = vendor.location;
+            if (location && (location.city || location.state || location.address)) {
+                const locationParts = [location.address, location.city, location.state, location.pincode].filter(Boolean);
+                document.getElementById('locationText').textContent = locationParts.join(', ');
+            } else {
+                document.getElementById('storeLocation').style.display = 'none';
+            }
+
+            // Store image
+            const imageContainer = document.getElementById('storeImage');
+            if (vendor.images && vendor.images.length > 0) {
+                imageContainer.innerHTML = `<img src="${vendor.images[0]}" alt="${vendor.storeName}" class="w-full h-full object-cover rounded-lg">`;
+            } else {
+                imageContainer.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center bg-gray-200 rounded-lg">
+                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                `;
+            }
+
+            // Update page title
+            document.title = `${vendor.storeName} - Riztoo`;
+        }
+
+        // Display products
+        function displayProducts() {
+            const container = document.getElementById('productsGrid');
+            const products = storeData.products;
+
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No products available</h3>
+                        <p class="text-gray-600">This store hasn't added any products yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    ${products.map(product => `
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                            <div class="aspect-w-1 aspect-h-1 bg-gray-200">
+                                ${product.images && product.images.length > 0 ? 
+                                    `<img src="${product.images[0]}" alt="${product.productId.name}" class="w-full h-48 object-cover">` :
+                                    product.productId.images && product.productId.images.length > 0 ?
+                                    `<img src="${product.productId.images[0]}" alt="${product.productId.name}" class="w-full h-48 object-cover">` :
+                                    `<div class="w-full h-48 flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>`
+                                }
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1">${product.productId.name}</h3>
+                                <p class="text-sm text-gray-600 mb-2">${product.productId.category}</p>
+                                <p class="text-2xl font-bold text-green-600 mb-2">₹${product.price.toLocaleString()}</p>
+                                <p class="text-sm text-gray-500 mb-3">Stock: ${product.stock} units</p>
+                                
+                                ${product.stock > 0 ? `
+                                    <button onclick="addToCart('${product._id}', '${product.productId.name}')" 
+                                        class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 text-sm">
+                                        Add to Cart
+                                    </button>
+                                ` : `
+                                    <button disabled class="w-full bg-gray-300 text-gray-500 py-2 rounded-md text-sm cursor-not-allowed">
+                                        Out of Stock
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Add to cart
+        async function addToCart(vendorProductId, productName) {
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ vendorProductId, qty: 1 })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage(`${productName} added to cart!`, 'success');
+                    loadCartCount();
+                } else {
+                    showMessage(result.error || 'Failed to add to cart', 'error');
+                }
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                showMessage('Failed to add to cart', 'error');
+            }
+        }
+
+        // Show error state
+        function showError() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('storeContent').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        // Load cart count
+        async function loadCartCount() {
+            try {
+                const response = await fetch('/cart');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('cartCount').textContent = data.itemCount || 0;
+                }
+            } catch (error) {
+                console.error('Cart count failed:', error);
+            }
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('userName').textContent = data.user.name;
+                    document.getElementById('userMenu').classList.remove('hidden');
+                    document.getElementById('loginMenu').classList.add('hidden');
+                } else {
+                    document.getElementById('userMenu').classList.add('hidden');
+                    document.getElementById('loginMenu').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('/auth/logout');
+                window.location.reload();
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-md z-50 ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Initialize
+        checkAuth();
+        loadCartCount();
+        loadStore();
+    </script>
+</body>
+</html>
