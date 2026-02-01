@@ -1,4 +1,4 @@
-# Riztoo - Multi-Role E-commerce Platform
+# Riztoo - Multi-Role E-commerce Platform.
 
 A full-stack e-commerce platform for local stores with three distinct user roles: Customer, Vendor, and Admin.
 
