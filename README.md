@@ -4,7 +4,7 @@ A Full-stack e-commerce platform for local stores with three distinct user roles
 
 ## Features
 
-### Customer Features
+### Customer Features:-
 - Browse stores and products from multiple vendors (Electronics, Fashion, Books, Home, Sports, Grocery)
 - Search and filter by category and store
 - Add products to cart (guest access allowed)
