@@ -241,6 +241,7 @@ By default, files are stored locally in `server/uploads/`. To use Cloudinary:
 4. Test thoroughly
 5. Submit a pull request
 
-## License
+---
 
+### License
 MIT License - see LICENSE file for details
