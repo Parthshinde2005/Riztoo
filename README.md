@@ -36,7 +36,7 @@ A Full-stack e-commerce platform for local stores with three distinct user roles
 - **Payment**: Dummy payment simulator
 - **Database**: MongoDB (database name: riztoo)
 
-## Project Structure
+## Project Structure.
 
 ```
 riztoo/
